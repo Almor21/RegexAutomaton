@@ -1,12 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ["Montserrat", "sans-serif"], // Cambia 'sans' por el nombre de la fuente
-      },
+    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Montserrat', 'sans-serif'] // Cambia 'sans' por el nombre de la fuente
+            }
+        }
     },
-  },
-  plugins: [],
+    plugins: []
 };
