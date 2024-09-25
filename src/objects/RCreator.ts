@@ -27,7 +27,9 @@ export function createOR(rg1: RGraph, rg2: RGraph): RGraph {
     rg1.finalState.addConnection(new RConnection('', finalState));
     rg2.finalState.addConnection(new RConnection('', finalState));
 
-    return new RGraph(initState, finalState);
+    const nwStates = rg1.states.concat(rg2.states);
+    nwStates.push(initState, finalState);
+    return new RGraph(initState, finalState, nwStates);
 }
 
 // Create (rg1).(rg2) AFN
@@ -37,7 +39,9 @@ export function createConcact(rg1: RGraph, rg2: RGraph): RGraph {
     const finalState = rg2.finalState;
 
     rg2.initState.connections.forEach((cn) => midState.addConnection(cn));
-    return new RGraph(initState, finalState);
+
+    const nwStates = rg1.states.concat(rg2.states);
+    return new RGraph(initState, finalState, nwStates);
 }
 
 // Create rg* AFN
@@ -52,7 +56,9 @@ export function createKleenLock(rg: RGraph): RGraph {
     midState.addConnection(new RConnection('', rg.initState));
     midState.addConnection(new RConnection('', finalState));
 
-    return new RGraph(initState, finalState);
+    const nwStates = [...rg.states];
+    nwStates.push(initState, finalState);
+    return new RGraph(initState, finalState, nwStates);
 }
 
 // Create rg+ AFN
@@ -66,7 +72,9 @@ export function createPositiveLock(rg: RGraph): RGraph {
     midState.addConnection(new RConnection('', rg.initState));
     midState.addConnection(new RConnection('', finalState));
 
-    return new RGraph(initState, finalState);
+    const nwStates = [...rg.states];
+    nwStates.push(initState, finalState);
+    return new RGraph(initState, finalState, nwStates);
 }
 
 // Create rg? AFN
@@ -80,5 +88,7 @@ export function createOptional(rg: RGraph): RGraph {
 
     midState.addConnection(new RConnection('', finalState));
 
-    return new RGraph(initState, finalState);
+    const nwStates = [...rg.states];
+    nwStates.push(initState, finalState);
+    return new RGraph(initState, finalState, nwStates);
 }
