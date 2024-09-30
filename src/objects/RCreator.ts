@@ -33,14 +33,15 @@ export function createOR(rg1: RGraph, rg2: RGraph): RGraph {
 }
 
 // Create (rg1).(rg2) AFN
-export function createConcact(rg1: RGraph, rg2: RGraph): RGraph {
+export function createConcat(rg1: RGraph, rg2: RGraph): RGraph {
     const initState = rg1.initState;
     const midState = rg1.finalState;
     const finalState = rg2.finalState;
 
     rg2.initState.connections.forEach((cn) => midState.addConnection(cn));
 
-    const nwStates = rg1.states.concat(rg2.states);
+    let nwStates = rg1.states.concat(rg2.states);
+    nwStates = nwStates.filter((st) => st !== rg2.initState);
     return new RGraph(initState, finalState, nwStates);
 }
 
