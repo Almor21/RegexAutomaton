@@ -40,7 +40,7 @@ function InputRegex({ set }: { set: (v: string) => void }) {
                 />
                 <button onClick={() => send()}>Send</button>
             </div>
-            <h3 className="text-white">{message}</h3>
+            <h3 className="text-white h-4">{message}</h3>
         </div>
     );
 }

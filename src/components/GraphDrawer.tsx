@@ -17,7 +17,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
             },
             {
                 id: graph.initState.ID,
-                label: '1'
+                label: graph.initState.getLabel()
             }
         ];
 
@@ -31,16 +31,13 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
                 color: 'white'
             }
         ];
-        let index = 2;
 
         for (const st of graph.states) {
             if (st !== graph.initState && st !== graph.finalState) {
                 nodes_array.push({
                     id: st.ID,
-                    label: `${index}`
+                    label: st.getLabel()
                 });
-
-                index++;
             }
 
             edges_array.push(
@@ -56,7 +53,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
 
         nodes_array.push({
             id: graph.finalState.ID,
-            label: `${index}`
+            label: graph.finalState.getLabel()
         });
 
         const nodes = new DataSet<Node>(nodes_array);
@@ -109,7 +106,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
 
         return () => {
             network.destroy();
-        }
+        };
     }, [graph]);
 
     return <div ref={divRef} className="w-full h-96"></div>;
