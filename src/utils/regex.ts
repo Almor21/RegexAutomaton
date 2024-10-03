@@ -19,8 +19,9 @@ export function getAPH(regex: string): string[] {
 // Create AFN Graph
 export function createGraph(regex: string): RGraph | undefined {
     const a = createBase('a');
+    const b = createBase('b');
 
-    if (a) return createKleenLock(a);
+    if (a && b) return createOR(a, b);
 }
 
 // Get AFN Transition Table
@@ -32,8 +33,8 @@ export function getTransitionTable(graph: RGraph, columns: string[]) {
                 columns.map((cl) => [
                     cl,
                     st.connections
-                        .find((cn) => cn.value === cl)
-                        ?.next.getLabel()
+                        .filter((cn) => cn.value === cl)
+                        .map((cn) => cn.next.getLabel())
                 ])
             )
         ])
