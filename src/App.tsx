@@ -19,7 +19,9 @@ function App() {
         <>
             <Title />
             <InputRegex set={setRegex} />
-            {graph && <GraphDrawer graph={graph} />}
+            <div className='flex justify-center'>
+                {graph && <GraphDrawer graph={graph} />}
+            </div>
         </>
     );
 }
