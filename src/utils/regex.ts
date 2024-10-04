@@ -7,6 +7,7 @@ import {
     createConcat,
     createOptional
 } from '../objects/RCreator';
+
 import RGraph from '../objects/RGraph';
 
 export function validate(regex: string): boolean {
