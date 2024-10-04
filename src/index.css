@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: black;
-}
-
 button {
   padding: 0.25rem 0.5rem;
   background-color: white;

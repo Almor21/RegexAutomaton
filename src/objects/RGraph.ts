@@ -25,6 +25,10 @@ class RGraph {
 
         this.states.push(state);
     };
+
+    setLabels = () => {
+        this.states.forEach((st, index) => st.setLabel(index.toString()));
+    };
 }
 
 export default RGraph;
