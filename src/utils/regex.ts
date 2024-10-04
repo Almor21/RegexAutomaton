@@ -25,6 +25,7 @@ export function getAPH(regex: string): string[] {
 }
 
 // Create AFN Graph
+
 interface Token {
     type:
         | 'literal'
