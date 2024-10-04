@@ -30,13 +30,14 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
         ];
 
         let next_lv = [graph.initState];
-        let visited = [graph.initState.ID];
+        let visited: string[] = [];
         let level = 1;
         while (next_lv.length != 0) {
             const actual_lv = [...next_lv];
             next_lv = [];
 
             for (const st of actual_lv) {
+                if (visited.includes(st.ID)) continue;
                 visited.push(st.ID);
 
                 nodes_array.push({
@@ -45,11 +46,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
                     x: level
                 });
 
-                next_lv.push(
-                    ...st.connections
-                        .map((cn) => cn.next)
-                        .filter((s) => !visited.includes(s.ID))
-                );
+                next_lv.push(...st.connections.map((cn) => cn.next));
                 edges_array.push(
                     ...st.connections.map((cn) => ({
                         from: st.ID,
@@ -63,7 +60,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
 
             level++;
         }
-      
+
         const nodes = new DataSet<Node>(nodes_array);
         const edges = new DataSet<Edge>(edges_array);
 
@@ -111,9 +108,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
         };
     }, [graph]);
 
-    return (
-        <div ref={divRef} className="w-full h-full"></div>
-    );
+    return <div ref={divRef} className="w-full h-full"></div>;
 }
 
 export default GraphDrawer;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { validate } from '../utils/regex';
+import { validate } from '../utils/regexUtils';
 
 function InputRegex({
     onChangeRegex,

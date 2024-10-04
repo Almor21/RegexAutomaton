@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import InputRegex from './components/InputRegex';
-import Title from './components/Title';
 import GraphDrawer from './components/GraphDrawer';
-import { createGraph, getAPH, getTransitionTable } from './utils/regex';
+import { createGraph, getAPH, getTransitionTable } from './utils/regexUtils';
 import './App.css';
 import Options from './components/Options';
 import Controls from './components/Controls';
@@ -18,7 +17,8 @@ function App() {
 
     if (graph) {
         graph.setLabels();
-        console.log(getTransitionTable(graph, ['', ...aph]));
+        // console.log(getTransitionTable(graph, ['', ...aph]));
+        console.log(graph.states.map((st) => st.ID));
     }
 
     return (
