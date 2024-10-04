@@ -2,20 +2,27 @@ import { createBase, createKleenLock, createOR } from "../objects/RCreator";
 import RGraph from "../objects/RGraph";
 
 export function validate(regex: string): boolean {
-    try {
-        // block the use of the following characters: \ [ ] . ^ $
-        const forbiddenPattern = /[\\\[\]\.\^\$]/;
-        
-        // verify if the regex contains forbidden characters
-        if (forbiddenPattern.test(regex)) {
-            return false;
-        }
+    // regex to detect valid characters
+    const validPattern = /^[a-zA-Z0-9()+*?|]*$/;
 
-        // we tried to compile the regex
+    // verify if expression have only characters allowed 
+    if (!validPattern.test(regex)) {
+        return false;
+    }
+
+    // regex to detect invalid paterns like *?, +?, **, ++, etc.
+    const invalidPattern = /[*+?]{2,}|[*+?][*+?]|[?*+](?=\))|[|]{2,}|^\||\|$/;
+
+    // Verify if expression have invalid patterns
+    if (invalidPattern.test(regex)) {
+        return false;
+    }
+
+    try {
         new RegExp(regex);
-        return true;  // if it compiles, it is valid
+        return true;  // if can compile, the expression is valid
     } catch (e) {
-        return false;  // if it doesn't compile, it is invalid
+        return false;  // if can't compile, the expression is invalid
     }
 }
 
