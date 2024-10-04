@@ -42,7 +42,7 @@ function InputRegex({
     };
 
     return (
-        <div className="grid grid-cols-[auto_1fr_auto] gap-8">
+        <div className="max-w-[1280px] w-full grid grid-cols-[auto_1fr_auto] gap-8">
             <img
                 src="/Logo.svg"
                 alt="Logo Image"

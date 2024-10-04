@@ -23,7 +23,7 @@ function App() {
 
     return (
         <div className="grid grid-rows-[auto_1fr] min-h-screen">
-            <section className="px-20 py-5 items-center bg-[var(--color-300)]">
+            <section className="px-20 py-5 flex justify-center bg-[var(--color-300)]">
                 <InputRegex onChangeRegex={setRegex} onChangeStr={setStr} />
             </section>
             <section className="relative p-2 bg-[var(--color-500)] overflow-x-hidden">
