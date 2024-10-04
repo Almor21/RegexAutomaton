@@ -63,7 +63,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
 
             level++;
         }
-
+      
         const nodes = new DataSet<Node>(nodes_array);
         const edges = new DataSet<Edge>(edges_array);
 
