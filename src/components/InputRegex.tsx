@@ -1,46 +1,84 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { motion, useAnimation } from 'framer-motion';
 import { validate } from '../utils/regex';
 
-function InputRegex({ set }: { set: (v: string) => void }) {
+function InputRegex({
+    onChangeRegex,
+    onChangeStr
+}: {
+    onChangeRegex: (v: string) => void;
+    onChangeStr: (v: string) => void;
+}) {
     const [regex, setRegex] = useState('');
-    const [valid, setValid] = useState(-1);
-    const [message, setMessage] = useState('');
+    const [str, setStr] = useState('');
+    const controls = useAnimation();
 
-    const send = () => {
-        setValid(validate(regex) ? 1 : 0);
-        set(regex);
+    const sendRegex = () => {
+        controls.stop();
+        controls.set({
+            outline: 'none'
+        });
+
+        if (validate(regex)) {
+            onChangeRegex(regex);
+        } else {
+            controls.set({
+                outline: '2px solid #b91c1c'
+            });
+            controls.start(
+                {
+                    outline: 'none'
+                },
+                {
+                    delay: 1,
+                    duration: 0.8
+                }
+            );
+        }
     };
 
-    useEffect(() => {
-        if (valid === -1) return;
-
-        if (valid) {
-            setMessage('Valid!');
-        } else {
-            setMessage('No Valid!');
-        }
-
-        const timer = setTimeout(() => {
-            setMessage('');
-            setValid(-1);
-        }, 3000);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [valid]);
+    const sendStr = () => {
+        onChangeStr(str);
+    };
 
     return (
-        <div className="flex justify-center items-center flex-col">
-            <div className="flex justify-center py-4 gap-2">
-                <input
-                    className="p-1 border border-black focus:outline-none rounded-lg"
+        <div className="max-w-[1280px] w-full grid grid-cols-[auto_1fr_auto] gap-8">
+            <img
+                src="/Logo.svg"
+                alt="Logo Image"
+                className="filter invert drop-shadow-[2px_4px_4px_rgba(0,0,0,0.6)]"
+                width={100}
+                height={100}
+            />
+            <div className="w-full flex flex-col gap-3 justify-center">
+                <motion.input
+                    className="w-full px-4 py-1 bg-[var(--color-900)] focus:outline-none rounded-lg shadow-[2px_4px_4px_rgba(0,0,0,0.6)] placeholder:font-light placeholder:italic placeholder:text-sm"
+                    animate={controls}
+                    placeholder="Regular Expression"
                     value={regex}
                     onChange={(e) => setRegex(e.target.value)}
                 />
-                <button onClick={() => send()}>Send</button>
+                <input
+                    className="px-4 py-1 bg-[var(--color-900)] focus:outline-none rounded-lg shadow-[2px_4px_4px_rgba(0,0,0,0.6)] placeholder:font-light placeholder:italic placeholder:text-sm"
+                    placeholder="String"
+                    value={str}
+                    onChange={(e) => setStr(e.target.value)}
+                />
             </div>
-            <h3 className="text-white">{message}</h3>
+            <div className="flex flex-col justify-evenly items-center">
+                <button
+                    className="w-full bg-[var(--color-900)] text-[var(--color-100)] shadow-[2px_4px_4px_rgba(0,0,0,0.6)] transition-all hover:bg-gray-300 active:bg-[var(--color-100)] active:text-[var(--color-900)]"
+                    onClick={() => sendRegex()}
+                >
+                    Send
+                </button>
+                <button
+                    className="w-full bg-[var(--color-900)] text-[var(--color-100)] shadow-[2px_4px_4px_rgba(0,0,0,0.6)] transition-all hover:bg-gray-300 active:bg-[var(--color-100)] active:text-[var(--color-900)]"
+                    onClick={() => sendStr()}
+                >
+                    Run
+                </button>
+            </div>
         </div>
     );
 }

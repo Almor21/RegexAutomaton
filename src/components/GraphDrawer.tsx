@@ -11,13 +11,10 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
         const nodes_array: Node[] = [
             {
                 id: '0',
-                color: {
-                    border: 'black'
-                }
-            },
-            {
-                id: graph.initState.ID,
-                label: '1'
+                // color: {
+                //     border: 'black'
+                // },
+                x: 0
             }
         ];
 
@@ -31,34 +28,42 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
                 color: 'white'
             }
         ];
-        let index = 2;
 
-        for (const st of graph.states) {
-            if (st !== graph.initState && st !== graph.finalState) {
+        let next_lv = [graph.initState];
+        let visited = [graph.initState.ID];
+        let level = 1;
+        while (next_lv.length != 0) {
+            const actual_lv = [...next_lv];
+            next_lv = [];
+
+            for (const st of actual_lv) {
+                visited.push(st.ID);
+
                 nodes_array.push({
                     id: st.ID,
-                    label: `${index}`
+                    label: st.getLabel(),
+                    x: level
                 });
 
-                index++;
+                next_lv.push(
+                    ...st.connections
+                        .map((cn) => cn.next)
+                        .filter((s) => !visited.includes(s.ID))
+                );
+                edges_array.push(
+                    ...st.connections.map((cn) => ({
+                        from: st.ID,
+                        to: cn.next.ID,
+                        arrows: 'to',
+                        label: cn.value || 'ϵ',
+                        font: { align: 'horizontal' }
+                    }))
+                );
             }
 
-            edges_array.push(
-                ...st.connections.map((cn) => ({
-                    from: st.ID,
-                    to: cn.next.ID,
-                    arrows: 'to',
-                    label: cn.value || 'ϵ',
-                    font: { align: 'horizontal' }
-                }))
-            );
+            level++;
         }
-
-        nodes_array.push({
-            id: graph.finalState.ID,
-            label: `${index}`
-        });
-
+      
         const nodes = new DataSet<Node>(nodes_array);
         const edges = new DataSet<Edge>(edges_array);
 
@@ -69,7 +74,6 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
 
         if (divRef.current) {
             network = new Network(divRef.current, data, {
-                physics: false,
                 nodes: {
                     size: 100,
                     chosen: false,
@@ -96,23 +100,20 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
                 edges: {
                     chosen: false
                 },
-                layout: {
-                    hierarchical: {
-                        enabled: true,
-                        levelSeparation: 120,
-                        direction: 'LR', // UD, DU, LR, RL
-                        sortMethod: 'directed' // hubsize, directed
-                    }
+                physics: {
+                    timestep: 1
                 }
             });
         }
 
         return () => {
             network.destroy();
-        }
+        };
     }, [graph]);
 
-    return <div ref={divRef} className="w-full h-96"></div>;
+    return (
+        <div ref={divRef} className="w-full h-full"></div>
+    );
 }
 
 export default GraphDrawer;
