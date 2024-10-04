@@ -112,7 +112,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
     }, [graph]);
 
     return (
-        <div ref={divRef} className="w-11/12 h-96 border border-white"></div>
+        <div ref={divRef} className="w-full h-full"></div>
     );
 }
 
