@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RGraph from '../objects/RGraph';
 import { DataSet, Edge, Network, Node } from 'vis-network/standalone';
 

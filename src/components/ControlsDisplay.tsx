@@ -1,14 +1,16 @@
 import React from 'react';
 
-function Controls({
-    onPlay,
-    onStep,
-    onStop
-}: {
-    onPlay?: () => void;
-    onStep?: () => void;
-    onStop?: () => void;
-}) {
+type ControlsType = {
+    play?: () => void;
+    step?: () => void;
+    stop?: () => void;
+};
+
+function ControlsDisplay({ controls }: { controls?: ControlsType }) {
+    const onPlay = controls?.play;
+    const onStep = controls?.step;
+    const onStop = controls?.stop;
+
     return (
         <div className="absolute p-1 bottom-3 left-1/2 z-10 flex gap-3 -translate-x-1/2 bg-[var(--color-300)] border border-[var(--color-700)] rounded-sm">
             <button
@@ -33,4 +35,4 @@ function Controls({
     );
 }
 
-export default Controls;
+export default ControlsDisplay;
