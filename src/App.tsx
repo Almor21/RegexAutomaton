@@ -14,12 +14,13 @@ function App() {
     const [option, setOption] = useState(-1);
     const graph = createGraph(regex);
     const aph = getAPH(regex);
+    let table;
 
     if (graph) {
         graph.setLabels();
-        // console.log(getTransitionTable(graph, ['', ...aph]));
-        console.log(graph.states.map((st) => st.ID));
+        table = getTransitionTable(graph, ['', ...aph]);
     }
+    console.log(table);
 
     return (
         <div className="grid grid-rows-[auto_1fr] min-h-screen">
