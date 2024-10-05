@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import InputRegex from './components/InputRegex';
 import GraphDrawer from './components/GraphDrawer';
-import { createGraph, getAPH, getTransitionTable } from './utils/regexUtils';
+import { createGraph, getAPH, getTransitionTable, convertAFN_to_AFD_NoOp } from './utils/regexUtils';
 import './App.css';
 import Options from './components/Options';
 import Controls from './components/Controls';
 import Properties from './components/Properties';
 import Table from './components/Table';
+import {cerraduraEpsilon, mueve} from './utils/subsetMethodsUtils';
 
 function App() {
     const [regex, setRegex] = useState('');
@@ -14,12 +15,20 @@ function App() {
     const [option, setOption] = useState(-1);
     const graph = createGraph(regex);
     const aph = getAPH(regex);
+    let table;
+    let epsilon;
+    let mueveSymbol;
+    let afdTable;
 
     if (graph) {
         graph.setLabels();
-        // console.log(getTransitionTable(graph, ['', ...aph]));
-        console.log(graph.states.map((st) => st.ID));
+        table = getTransitionTable(graph, ['', ...aph]);
+        afdTable = convertAFN_to_AFD_NoOp(graph, aph);
+        console.log(afdTable)
     }
+    
+
+
 
     return (
         <div className="grid grid-rows-[auto_1fr] min-h-screen">
