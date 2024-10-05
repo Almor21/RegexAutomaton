@@ -308,5 +308,7 @@ export function getTransitionTable(graph: RGraph, columns: string[]) {
 export function createGraph(regex: string): RGraph | undefined {
     const tokens = tokenize(regex); // Tokenizamos la expresión
     const ast = parse(tokens); // Construimos el AST
-    return buildAutomaton(ast); // Construimos el autómata a partir del AST
+    const graph = buildAutomaton(ast); // Construimos el autómata a partir del AST
+    graph?.setLabels();
+    return graph;
 }
