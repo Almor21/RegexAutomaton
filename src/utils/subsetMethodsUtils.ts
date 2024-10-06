@@ -24,7 +24,10 @@ function searchTransitions(
                 const nextState = getStateByLabel(allStates, nextStateLabel); 
                 if (!setOperation.has(nextState)) {
                     setOperation.add(nextState); 
-                    stack.push(nextState); 
+                    if(!symbol){
+                        stack.push(nextState);
+                    }
+                     
                 }
             }
         }
@@ -51,7 +54,7 @@ export function cerraduraEpsilon(
     const setEpsilon = `Cerradura-Epsilon ({${labels_in.join(
         ', '
     )}}): { ${labels_out.join(', ')} }`;
-    console.log(setEpsilon);
+    //console.log(setEpsilon);
 
     return Array.from(epsilonClousure);
 }
@@ -73,7 +76,7 @@ export function mueve(
     const setMueveSymbol = `mueve({${labels_in.join(
         ', '
     )}}, ${symbol}): { ${labels_out.join(', ')} }`;
-    console.log(setMueveSymbol);
+    //console.log(setMueveSymbol);
 
     return Array.from(mueveSymbol);
 }

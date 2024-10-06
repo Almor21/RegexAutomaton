@@ -8,6 +8,8 @@ import Controls from './components/Controls';
 import Properties from './components/Properties';
 import Table from './components/Table';
 import {cerraduraEpsilon, mueve} from './utils/subsetMethodsUtils';
+import {optimizarAFD} from './utils/significantStatesUtils';
+import { DState } from './utils/subsetUtils';
 
 function App() {
     const [regex, setRegex] = useState('');
@@ -17,14 +19,16 @@ function App() {
     const aph = getAPH(regex);
     let table;
     let epsilon;
-    let mueveSymbol;
+    let afdOpti;
     let afdTable;
 
     if (graph) {
         graph.setLabels();
         table = getTransitionTable(graph, ['', ...aph]);
         afdTable = convertAFN_to_AFD_NoOp(graph, aph);
-        console.log(afdTable)
+        afdOpti = optimizarAFD(afdTable[1] as DState[],afdTable[0], table,['', ...aph] , graph.finalState);
+        console.log(afdOpti[0])
+        console.log(afdOpti[1])
     }
     
 
