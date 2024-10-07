@@ -221,10 +221,10 @@ function parse(tokens: Token[]): ASTNode {
     return outputStack.pop()!;
 }
 
-function buildAutomaton(node: ASTNode | undefined): RGraph | undefined {
+function buildAutomaton(node: ASTNode | undefined): RGraph | null {
     if (!node) {
         console.error('Received an undefined AST node');
-        return undefined; // O lanzar un error, según lo que prefieras
+        return null; // O lanzar un error, según lo que prefieras
     }
 
     switch (node.type) {
@@ -305,7 +305,7 @@ export function getTransitionTable(graph: RGraph, columns: string[]) {
 }
 
 
-export function createGraph(regex: string): RGraph | undefined {
+export function createGraph(regex: string): RGraph | null {
     const tokens = tokenize(regex); // Tokenizamos la expresión
     const ast = parse(tokens); // Construimos el AST
     const graph = buildAutomaton(ast); // Construimos el autómata a partir del AST

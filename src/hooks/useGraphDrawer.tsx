@@ -2,8 +2,16 @@ import React, { useEffect, useState } from 'react';
 import RGraph from '../objects/RGraph';
 import { DataSet, Edge, Network, Node } from 'vis-network/standalone';
 
-function useGraphDrawer(scope: HTMLDivElement | null, graph: RGraph | undefined) {
+function useGraphDrawer(
+    scope: HTMLDivElement | null,
+    graph: RGraph | null
+): [Network | null, () => void] {
     const [network, setNetwork] = useState<Network | null>(null);
+    const [render, setRender] = useState(false);
+
+    const reset = () => {
+        setRender((prevState) => !prevState);
+    };
 
     useEffect(() => {
         if (!scope || !graph) return;
@@ -94,7 +102,11 @@ function useGraphDrawer(scope: HTMLDivElement | null, graph: RGraph | undefined)
                 }
             },
             edges: {
-                chosen: false
+                chosen: false,
+                color: {
+                    color: 'white',
+                    inherit: false
+                }
                 // smooth: true
             },
             physics: {
@@ -113,9 +125,9 @@ function useGraphDrawer(scope: HTMLDivElement | null, graph: RGraph | undefined)
             if (network) network.destroy();
             setNetwork(null);
         };
-    }, [graph]);
+    }, [graph, render]);
 
-    return network;
+    return [network, reset];
 }
 
 export default useGraphDrawer;

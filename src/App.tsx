@@ -16,25 +16,25 @@ function App() {
     const [option, setOption] = useState(-1);
     const divRef = useRef<HTMLDivElement>(null);
 
-    const [graph, setGraph] = useState<RGraph>();
+    const [graph, setGraph] = useState<RGraph | null>(null);
     const [aph, setAph] = useState<string[]>();
     const [table, setTable] = useState<{
         [k: string]: {
             [k: string]: string[];
         };
     }>();
-    const network = useGraphDrawer(divRef.current, graph);
+    
+    const [network, reset] = useGraphDrawer(divRef.current, graph);
+    const controls = useControls(graph, network, str, reset);
 
-    const loadGraph = useCallback(() => {
+    useEffect(() => {
         const g = createGraph(regex);
         const a = getAPH(regex);
 
-        setGraph(g);
+        if (g) setGraph(g);
         setAph(a);
         if (g && a) setTable(getTransitionTable(g, ['', ...a]));
     }, [regex]);
-    const controls = useControls(network, loadGraph);
-    useEffect(() => loadGraph(), [regex]);
 
     return (
         <div className="grid grid-rows-[auto_1fr] min-h-screen">
