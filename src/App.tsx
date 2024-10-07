@@ -32,6 +32,10 @@ function App() {
     const [equivalence, setEquivalence] =
         useState<EquivalenceTableType | null>();
     const divRef = useRef<HTMLDivElement>(null);
+    const [clickPosition, setClickPosition] = useState({
+        x: 0,
+        y: 0
+    });
 
     const [graph, setGraph] = useState<RGraph | null>(null);
 
@@ -76,6 +80,24 @@ function App() {
         setTable(afdOptiTable);
         setGraph(tableToGraph(afdOptiTable));
     }, [regex, option]);
+
+    useEffect(() => {
+        if (!(network && graph)) return;
+        const id = network.getNodeAt(clickPosition);
+
+        console.log(clickPosition, graph.getState(id as string));
+    }, [clickPosition]);
+
+    useEffect(() => {
+        if (!divRef.current) return;
+
+        divRef.current.addEventListener('mousedown', (e) => {
+            const x = e.offsetX;
+            const y = e.offsetY;
+
+            setClickPosition({ x, y });
+        });
+    }, []);
 
     return (
         <div className="grid grid-rows-[auto_1fr] min-h-screen">
