@@ -8,7 +8,7 @@ export function validate(regex: string): boolean {
     // regex to detect valid characters
     const validPattern = /^[a-zA-Z0-9()+*?|]*$/;
 
-    // verify if expression have only characters allowed 
+    // verify if expression have only characters allowed
     if (!validPattern.test(regex)) {
         return false;
     }
@@ -23,9 +23,9 @@ export function validate(regex: string): boolean {
 
     try {
         new RegExp(regex);
-        return true;  // if can compile, the expression is valid
+        return true; // if can compile, the expression is valid
     } catch (e) {
-        return false;  // if can't compile, the expression is invalid
+        return false; // if can't compile, the expression is invalid
     }
 }
 
@@ -41,21 +41,24 @@ export function getAPH(regex: string): string[] {
 // Create AFN Graph
 
 export function getTransitionTable(graph: RGraph, columns: string[]) {
-    return Object.fromEntries(
-        graph.states.map((st) => [
-            st.getLabel(),
-            Object.fromEntries(
-                columns.map((cl) => [
-                    cl,
-                    st.connections
-                        .filter((cn) => cn.value === cl)
-                        .map((cn) => cn.next.getLabel())
-                ])
-            )
-        ])
-    );
+    return {
+        initialState: graph.initState.getLabel(),
+        finalState: graph.finalState.getLabel(),
+        data: Object.fromEntries(
+            graph.states.map((st) => [
+                st.getLabel(),
+                Object.fromEntries(
+                    columns.map((cl) => [
+                        cl,
+                        st.connections
+                            .filter((cn) => cn.value === cl)
+                            .map((cn) => cn.next.getLabel())
+                    ])
+                )
+            ])
+        )
+    };
 }
-
 
 export function createGraph(regex: string): RGraph | undefined {
     const tokens = tokenize(regex); // Tokenizamos la expresión
@@ -63,8 +66,16 @@ export function createGraph(regex: string): RGraph | undefined {
     return buildAutomaton(ast); // Construimos el autómata a partir del AST
 }
 
+export function tableToGraph(): RGraph | undefined {
+    return;
+}
 
 //Create No AFN not optimal
-export function convertAFN_to_AFD_NoOp(AFN: RGraph, alphabet: string[] ) {  
-    return  SubSets(AFN.initState, AFN.states, getTransitionTable(AFN , ['', ...alphabet]), alphabet);
+export function convertAFN_to_AFD_NoOp(AFN: RGraph, alphabet: string[]) {
+    return SubSets(
+        AFN.initState,
+        AFN.states,
+        getTransitionTable(AFN, ['', ...alphabet]),
+        alphabet
+    );
 }
