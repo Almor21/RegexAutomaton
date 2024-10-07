@@ -1,4 +1,4 @@
-const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const letters = "&abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const VALID_LETTERS = letters.split('');
 
 const symbols = "*?|+";

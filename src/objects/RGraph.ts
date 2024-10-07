@@ -26,6 +26,10 @@ class RGraph {
         this.states.push(state);
     };
 
+    getState = (id: string) => {
+        return this.states.find((s) => s.ID === id);
+    };
+
     setLabels = () => {
         this.states.forEach((st, index) => st.setLabel(index.toString()));
     };

@@ -184,10 +184,10 @@ export function parse(tokens: Token[]): ASTNode {
     return outputStack.pop()!;
 }
 
-export function buildAutomaton(node: ASTNode | undefined): RGraph | undefined {
+export function buildAutomaton(node: ASTNode | undefined): RGraph | null {
     if (!node) {
         console.error('Received an undefined AST node');
-        return undefined; // O lanzar un error, según lo que prefieras
+        return null; // O lanzar un error, según lo que prefieras
     }
 
     switch (node.type) {

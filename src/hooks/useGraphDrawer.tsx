@@ -1,12 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RGraph from '../objects/RGraph';
 import { DataSet, Edge, Network, Node } from 'vis-network/standalone';
 
-function GraphDrawer({ graph }: { graph: RGraph }) {
-    const divRef = useRef<HTMLDivElement>(null);
+function useGraphDrawer(
+    scope: HTMLDivElement | null,
+    graph: RGraph | null
+): [Network | null, () => void] {
+    const [network, setNetwork] = useState<Network | null>(null);
+    const [render, setRender] = useState(false);
+
+    const reset = () => {
+        setRender((prevState) => !prevState);
+    };
 
     useEffect(() => {
-        let network: Network;
+        if (!scope || !graph) return;
 
         const nodes_array: Node[] = [
             {
@@ -52,7 +60,7 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
                         from: st.ID,
                         to: cn.next.ID,
                         arrows: 'to',
-                        label: cn.value || 'ϵ',
+                        label: cn.value || '&',
                         font: { align: 'horizontal' }
                     }))
                 );
@@ -69,46 +77,55 @@ function GraphDrawer({ graph }: { graph: RGraph }) {
             edges: edges
         };
 
-        if (divRef.current) {
-            network = new Network(divRef.current, data, {
-                nodes: {
-                    size: 100,
-                    chosen: false,
-                    color: {
-                        background: 'black',
-                        border: 'white'
-                    },
-                    shape: 'circle',
-                    font: {
-                        color: 'white'
-                    },
-                    margin: {
-                        top: 12,
-                        left: 12
-                    },
-                    value: 1,
-                    scaling: {
-                        label: {
-                            min: 25,
-                            max: 25
-                        }
+        const net = new Network(scope, data, {
+            nodes: {
+                size: 100,
+                chosen: false,
+                color: {
+                    background: 'black',
+                    border: 'white'
+                },
+                shape: 'circle',
+                font: {
+                    color: 'white'
+                },
+                margin: {
+                    top: 12,
+                    left: 12
+                },
+                value: 1,
+                scaling: {
+                    label: {
+                        min: 25,
+                        max: 25
                     }
-                },
-                edges: {
-                    chosen: false
-                },
-                physics: {
-                    timestep: 1
                 }
-            });
-        }
+            },
+            edges: {
+                chosen: false,
+                color: {
+                    color: 'white',
+                    inherit: false
+                }
+                // smooth: true
+            },
+            physics: {
+                solver: 'forceAtlas2Based',
+                timestep: 1
+            },
+            layout: {
+                randomSeed: 'asdfasd'
+            }
+        });
+        setNetwork(net);
 
         return () => {
-            network.destroy();
+            if (network) network.destroy();
+            setNetwork(null);
         };
-    }, [graph]);
+    }, [graph, render]);
 
-    return <div ref={divRef} className="w-full h-full"></div>;
+    return [network, reset];
 }
 
-export default GraphDrawer;
+export default useGraphDrawer;
