@@ -22,7 +22,7 @@ function App() {
     if (graph) {
         graph.setLabels();
         console.log(getTransitionTable(graph, ['', ...aph]));
-        console.log(option);
+        console.log(str);
         TransitionTable = getTransitionTable(graph, ['', ...aph]);
 
         // Obtaining the initial and final states
@@ -45,6 +45,7 @@ function App() {
                     transitions={TransitionTable}
                     totalStates={graph ? graph.states.length : 0}
                     option={option}
+                    str={str}
                 />
                 <Table
                         table={TransitionTable}

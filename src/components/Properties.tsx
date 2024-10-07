@@ -8,9 +8,10 @@ interface PropertiesProps {
     totalStates: number;
     transitions: { [key: string]: { [key: string]: string[] } };
     option: number;
+    str: string;
 }
 
-const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalStates,  finalState , option, transitions }) => {
+const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalStates,  finalState , option, str,  transitions }) => {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
     const openDiv = useRef<HTMLDivElement>(null);
@@ -98,7 +99,7 @@ const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalSt
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full rotate-45" />
                     </div>
                 </div>
-                <div className="flex flex-col gap-2 h-full">
+                <div className="flex flex-col gap-2 h-full overflow-x-auto">
                     {/* Alphabet container */}
                     <div className="bg-[var(--color-500)] p-3 rounded-lg mt-2 text-white shadow-md max-h-24 overflow-y-auto">
                         <h3 className="font-semibold mb-2 text-center">Alphabet</h3>
@@ -118,10 +119,12 @@ const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalSt
                         // show the selected state
                     </div>
                     {/* container of states (property) */}
-                    <div className="bg-[var(--color-500)] p-4 rounded-lg mb-2 text-white">
-                        <h3 className="font-semibold mb-2 text-center">STR</h3>
-                        // whatever STR does
-                    </div>
+                    {str && (
+                        <div className="bg-[var(--color-500)] p-4 rounded-lg mb-2 text-white ">
+                            <h3 className="font-semibold mb-2 text-center">STR</h3>
+                            <p className='overflow-x-auto'>{str}</p>
+                        </div>
+                    )}
                 </div>
                 
             </motion.div>
