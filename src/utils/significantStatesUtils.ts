@@ -91,9 +91,10 @@ export function optimizarAFD(
             // Ahora, actualizamos todas las referencias en la tabla de transiciones
             for (const [keyState, transitions] of Object.entries(tranD.data)) {
                 for (const symbol of symbols) {
+
                     const targetState = transitions[symbol];
 
-                    if (targetState[0] === estado.label) {
+                    if (targetState && targetState[0] === estado.label) {
                         // Si encontramos una transición que apunta al estado duplicado, actualizamos inmediatamente
                         transitions[symbol] = [estadoExistente.label];
                     }
