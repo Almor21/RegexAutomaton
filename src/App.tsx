@@ -26,9 +26,10 @@ function App() {
         graph.setLabels();
         table = getTransitionTable(graph, ['', ...aph]);
         afdTable = convertAFN_to_AFD_NoOp(graph, aph);
-        afdOpti = optimizarAFD(afdTable[1] as DState[],afdTable[0], table,['', ...aph] , graph.finalState);
+        afdOpti = optimizarAFD(afdTable[1] ,afdTable[0], table,['', ...aph] , graph.finalState);
+        console.log(afdTable[0])
+        console.log(afdTable[2])
         console.log(afdOpti[0])
-        console.log(afdOpti[1])
     }
     
 
