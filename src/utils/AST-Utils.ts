@@ -9,6 +9,7 @@ import {
 
 import RGraph from '../objects/RGraph';
 
+
 interface Token {
     type:
         | 'literal'

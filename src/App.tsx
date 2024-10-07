@@ -26,7 +26,7 @@ function App() {
     const [str, setStr] = useState('');
     const [option, setOption] = useState(0);
 
-    const [alphabet, setAlphabet] = useState<string[]>();
+    const [alphabet, setAlphabet] = useState<string[]>([]);
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
     const divRef = useRef<HTMLDivElement>(null);
 
@@ -81,8 +81,20 @@ function App() {
                     value={option}
                     onChange={setOption}
                 />
-                <Properties />
-                <Table />
+
+                <Properties
+                    graph={graph}
+                    alphabet={alphabet}
+                    option={option}
+                    str={str}
+                />
+                <Table
+                    graph={graph}
+                    alphabet={alphabet}
+                    option={option}
+                    transitions={table?.data}
+                />
+
                 <div ref={divRef} className="w-full h-full"></div>
                 <ControlsDisplay controls={controls} />
             </section>
