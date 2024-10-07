@@ -3,12 +3,15 @@ import { tokenize, parse, buildAutomaton } from './AST-Utils';
 import { SubSets } from './subsetUtils';
 
 import RGraph from '../objects/RGraph';
+import { AFDTableType } from '../types/afTypes';
+import RState from '../objects/RState';
+import RConnection from '../objects/RConnection';
 
 export function validate(regex: string): boolean {
     // regex to detect valid characters
     const validPattern = /^[a-zA-Z0-9()+*?|&]*$/;
 
-    // verify if expression have only characters allowed 
+    // verify if expression have only characters allowed
     if (!validPattern.test(regex)) {
         return false;
     }
@@ -23,9 +26,9 @@ export function validate(regex: string): boolean {
 
     try {
         new RegExp(regex);
-        return true;  // if can compile, the expression is valid
+        return true; // if can compile, the expression is valid
     } catch (e) {
-        return false;  // if can't compile, the expression is invalid
+        return false; // if can't compile, the expression is invalid
     }
 }
 
@@ -41,21 +44,24 @@ export function getAPH(regex: string): string[] {
 // Create AFN Graph
 
 export function getTransitionTable(graph: RGraph, columns: string[]) {
-    return Object.fromEntries(
-        graph.states.map((st) => [
-            st.getLabel(),
-            Object.fromEntries(
-                columns.map((cl) => [
-                    cl,
-                    st.connections
-                        .filter((cn) => cn.value === cl)
-                        .map((cn) => cn.next.getLabel())
-                ])
-            )
-        ])
-    );
+    return {
+        initialState: graph.initState.getLabel(),
+        finalState: graph.finalState.getLabel(),
+        data: Object.fromEntries(
+            graph.states.map((st) => [
+                st.getLabel(),
+                Object.fromEntries(
+                    columns.map((cl) => [
+                        cl,
+                        st.connections
+                            .filter((cn) => cn.value === cl)
+                            .map((cn) => cn.next.getLabel())
+                    ])
+                )
+            ])
+        )
+    };
 }
-
 
 export function createGraph(regex: string): RGraph | null {
     const tokens = tokenize(regex); // Tokenizamos la expresión
@@ -65,8 +71,44 @@ export function createGraph(regex: string): RGraph | null {
     return graph;
 }
 
+export function tableToGraph(afTable: AFDTableType): RGraph | null {
+    // Get table
+    const table = afTable.data;
 
-//Create No AFN not optimal
-export function convertAFN_to_AFD_NoOp(AFN: RGraph, alphabet: string[] ) {  
-    return  SubSets(AFN.initState, AFN.states, getTransitionTable(AFN , ['', ...alphabet]), alphabet);
+    // create states
+    const states = Object.fromEntries(
+        Object.keys(table).map((name) => [name, new RState(name)])
+    );
+
+    // Create connections between states
+    for (const name in table) {
+        const tstate = table[name];
+        const rstate = states[name];
+
+        // Create connections to states
+        for (const value in tstate) {
+            const connections = tstate[value];
+            connections.forEach((cn) =>
+                rstate.addConnection(new RConnection(value, states[cn]))
+            );
+        }
+    }
+
+    // Create graph
+    const graph = new RGraph(
+        states[afTable.initialState],
+        states[afTable.finalState],
+        Object.values(states)
+    );
+    return graph;
+}
+
+//Create AFD not optimal
+export function convertAFN_to_AFD_NoOp(AFN: RGraph, alphabet: string[]) {
+    return SubSets(
+        AFN.initState,
+        AFN.states,
+        getTransitionTable(AFN, ['', ...alphabet]),
+        alphabet
+    );
 }

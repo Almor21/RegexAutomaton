@@ -1,13 +1,13 @@
-import { DState, estadosIguales, TransitionTable } from './subsetUtils';
 import RState from '../objects/RState';
-
-
-
+import { AFDTableType, TableType } from '../types/afTypes';
+import { SignificantStatesType } from '../types/signStatesTypes';
+import { DState } from '../types/subsetTypes';
+import { estadosIguales } from './subsetUtils';
 
 //Obtener los estados significativos de un subconjunto de estados
 function getSignificant(
     states: RState[],
-    transitionTable: any,
+    transitionTable: TableType,
     symbols: string[],
     finalState: RState
 ): RState[] {
@@ -40,15 +40,20 @@ function getSignificant(
 // Función para optimizar el AFD basado en los estados significativos
 export function optimizarAFD(
     estadosD: DState[],
-    tranD: TransitionTable,
-    transitionTable: any,
+    tranD: AFDTableType,
+    transitionTable: TableType,
     symbols: string[],
     finalState: RState
-): [TransitionTable, any, string[]] {
+): [AFDTableType, SignificantStatesType, string[]] {
     const estadosOptimizados: DState[] = [];
-    let nuevoTranD: TransitionTable = {};
+    const nuevoTranD: AFDTableType = {
+        initialState: '',
+        finalState: '',
+        data: {}
+    };
+    const table = nuevoTranD.data;
     let identicos: string[] = [];
-    let estadosSignificativos: { [key: string]: Set<string> } = {};
+    let estadosSignificativos: SignificantStatesType = {};
 
     for (const estado of estadosD) {
         const significativos = getSignificant(
@@ -70,34 +75,35 @@ export function optimizarAFD(
             // Si encontramos un estado equivalente, podemos fusionarlos
             const identical = `${estado.label} is identical to ${estadoExistente.label}`;
             identicos.push(identical);
-            console.log(identical);
 
             for (const symbol of symbols) {
-                if (tranD[estado.label] && tranD[estado.label][symbol]) {
-                    nuevoTranD[estadoExistente.label] =
-                        nuevoTranD[estadoExistente.label] || {};
-                    nuevoTranD[estadoExistente.label][symbol] =
-                        tranD[estado.label][symbol];
+                if (
+                    tranD.data[estado.label] &&
+                    tranD.data[estado.label][symbol]
+                ) {
+                    table[estadoExistente.label] =
+                        table[estadoExistente.label] || {};
+                    table[estadoExistente.label][symbol] =
+                        tranD.data[estado.label][symbol];
                 }
             }
 
             // Ahora, actualizamos todas las referencias en la tabla de transiciones
-            for (const [keyState, transitions] of Object.entries(tranD)) {
+            for (const [keyState, transitions] of Object.entries(tranD.data)) {
                 for (const symbol of symbols) {
                     const targetState = transitions[symbol];
-            
-                    if (targetState === estado.label) {
+
+                    if (targetState[0] === estado.label) {
                         // Si encontramos una transición que apunta al estado duplicado, actualizamos inmediatamente
-                        transitions[symbol] = estadoExistente.label;
+                        transitions[symbol] = [estadoExistente.label];
                     }
                 }
-            
+
                 if (keyState === estado.label) {
-                    nuevoTranD[estadoExistente.label] = transitions; 
-                    delete nuevoTranD[estado.label]; // Eliminamos el estado duplicado
+                    nuevoTranD.data[estadoExistente.label] = transitions;
+                    delete nuevoTranD.data[estado.label]; // Eliminamos el estado duplicado
                 }
             }
-
         } else {
             // Si no existe, añadimos el nuevo estado optimizado
             estadosOptimizados.push({
@@ -106,9 +112,13 @@ export function optimizarAFD(
                 label: estado.label
             });
 
-            nuevoTranD[estado.label] = tranD[estado.label];
+            table[estado.label] = tranD.data[estado.label];
         }
     }
+
+    nuevoTranD.initialState = estadosOptimizados[0].label;
+    nuevoTranD.finalState =
+        estadosOptimizados[estadosOptimizados.length - 1].label;
 
     return [nuevoTranD, estadosSignificativos, identicos];
 }
