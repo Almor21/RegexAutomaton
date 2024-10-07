@@ -7,12 +7,16 @@ export interface DState {
     label: string;    // Letra que representa este estado en el AFD
 }
 
+export interface TransitionTable {
+    [key: string]: { [symbol: string]: string };
+}
+
 export function SubSets(
     initialState: RState,
     allStates: RState[],
     transitionTable: any,
     symbols: string[] // Alfabeto del autómata (sin incluir epsilon)
-) {
+): [TransitionTable, DState[], { [key: string]: Set<string> }] {
     let labelCounter = 0; // Contador para asignar letras a los estados
     const getNextLabel = () => String.fromCharCode(65 + labelCounter++); // A, B, C...
 
@@ -28,13 +32,16 @@ export function SubSets(
         }
     ];
 
-    const tranD: { [key: string]: { [symbol: string]: string } } = {}; // Tabla de transiciones del AFD, usando letras como estados
+    const tranD: TransitionTable= {}; // Tabla de transiciones del AFD, usando letras como estados
+    const stateMapping: { [key: string]: Set<string> } = {};
 
     while (estadosD.some((d) => !d.marked)) {
         const T = estadosD.find((d) => !d.marked)!;
         T.marked = true; // Marcar el estado T
 
         tranD[T.label] = {}; // Inicializar transiciones para este estado en la tabla AFD
+        // Guardar el estado 'T' en el formato solicitado (e.g. "A" : {0, 1, 2, 3})
+        stateMapping[T.label] = new Set(T.states.map((state) => state.getLabel()));
 
         for (const symbol of symbols) {
 
@@ -43,6 +50,10 @@ export function SubSets(
                 allStates,
                 transitionTable
             );
+
+            if (U.length === 0) {
+                continue;
+            }
 
             // Verificar si el conjunto de estados U ya está en estadosD
             let existingState = estadosD.find((d) => estadosIguales(d.states, U));
@@ -58,7 +69,7 @@ export function SubSets(
         }
     }
 
-    return [tranD,estadosD]; 
+    return [tranD,estadosD, stateMapping]; 
 }
 
 // Función auxiliar para comparar si dos conjuntos de estados son iguales
