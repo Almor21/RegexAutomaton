@@ -3,6 +3,9 @@ import { tokenize, parse, buildAutomaton } from './AST-Utils';
 import { SubSets } from './subsetUtils';
 
 import RGraph from '../objects/RGraph';
+import { AFDTableType } from '../types/afTypes';
+import RState from '../objects/RState';
+import RConnection from '../objects/RConnection';
 
 export function validate(regex: string): boolean {
     // regex to detect valid characters
@@ -66,11 +69,39 @@ export function createGraph(regex: string): RGraph | undefined {
     return buildAutomaton(ast); // Construimos el autómata a partir del AST
 }
 
-export function tableToGraph(): RGraph | undefined {
-    return;
+export function tableToGraph(afTable: AFDTableType): RGraph | undefined {
+    // Get table
+    const table = afTable.data;
+
+    // create states
+    const states = Object.fromEntries(
+        Object.keys(table).map((name) => [name, new RState(name)])
+    );
+
+    // Create connections between states
+    for (const name in table) {
+        const tstate = table[name];
+        const rstate = states[name];
+
+        // Create connections to states
+        for (const value in tstate) {
+            const connections = tstate[value];
+            connections.forEach((cn) =>
+                rstate.addConnection(new RConnection(value, states[cn]))
+            );
+        }
+    }
+
+    // Create graph
+    const graph = new RGraph(
+        states[afTable.initialState],
+        states[afTable.finalState],
+        Object.values(states)
+    );
+    return graph;
 }
 
-//Create No AFN not optimal
+//Create AFD not optimal
 export function convertAFN_to_AFD_NoOp(AFN: RGraph, alphabet: string[]) {
     return SubSets(
         AFN.initState,
