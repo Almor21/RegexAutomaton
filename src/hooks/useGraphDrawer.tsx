@@ -60,7 +60,7 @@ function useGraphDrawer(
                         from: st.ID,
                         to: cn.next.ID,
                         arrows: 'to',
-                        label: cn.value || 'ϵ',
+                        label: cn.value || '&',
                         font: { align: 'horizontal' }
                     }))
                 );
@@ -117,8 +117,6 @@ function useGraphDrawer(
                 randomSeed: 'asdfasd'
             }
         });
-
-        // network.updateClusteredNode(0, {});
         setNetwork(net);
 
         return () => {

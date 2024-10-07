@@ -9,6 +9,7 @@ export function createBase(value: string): RGraph | undefined {
         return;
     }
 
+    if (value === '&') value = '';
     const initState = new RState();
     const finalState = new RState();
     const connection = new RConnection(value, finalState);
