@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import InputRegex from './components/InputRegex';
-import { createGraph, getAPH, getTransitionTable } from './utils/regexUtils';
+import { createGraph, getAPH, getTransitionTable, convertAFN_to_AFD_NoOp } from './utils/regexUtils';
 import './App.css';
 import Options from './components/Options';
 import ControlsDisplay from './components/ControlsDisplay';
@@ -9,6 +9,9 @@ import Table from './components/Table';
 import useGraphDrawer from './hooks/useGraphDrawer';
 import RGraph from './objects/RGraph';
 import useControls from './hooks/useControls';
+import {cerraduraEpsilon, mueve} from './utils/subsetMethodsUtils';
+import {optimizarAFD} from './utils/significantStatesUtils';
+import { DState } from './utils/subsetUtils';
 
 function App() {
     const [regex, setRegex] = useState('');
