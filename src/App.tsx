@@ -16,18 +16,10 @@ function App() {
     const graph = createGraph(regex);
     const aph = getAPH(regex);
     let TransitionTable = {};
-    let initialState = null;
-    let finalStates: string[] = [];
 
     if (graph) {
         graph.setLabels();
-        console.log(getTransitionTable(graph, ['', ...aph]));
-        console.log(str);
-        TransitionTable = getTransitionTable(graph, ['', ...aph]);
-
-        // Obtaining the initial and final states
-        initialState = graph.initState ? graph.initState.getLabel() : null;
-        finalStates = graph.finalState ? [graph.finalState.getLabel()] : [];
+        TransitionTable = getTransitionTable(graph, ['', ...aph]); 
     }
 
     return (
@@ -39,21 +31,18 @@ function App() {
                 <Options value={option} onChange={setOption} />
                 <Controls />
                 <Properties 
-                    alphabet={aph}
-                    initialState={initialState}
-                    finalState={finalStates}
-                    transitions={TransitionTable}
-                    totalStates={graph ? graph.states.length : 0}
-                    option={option}
-                    str={str}
+                    graph={graph} 
+                    alphabet={aph} 
+                    option={option} 
+                    str={str} 
+                    transitions={TransitionTable} 
                 />
-                <Table
-                        table={TransitionTable}
-                        alphabet={['', ...aph]}
-                        initialState={initialState}
-                        finalState={finalStates}
-                        option={option}
-                    />
+                <Table 
+                    graph={graph} 
+                    alphabet={['', ...aph]} 
+                    option={option} 
+                    transitions={TransitionTable} 
+                />
 
                 {graph && <GraphDrawer graph={graph} />}
             </section>

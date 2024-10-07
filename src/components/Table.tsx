@@ -2,17 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 
 interface TableProps {
-    table: { [key: string]: { [key: string]: string[] } } | null;
+    graph: any;
     alphabet: string[];
-    initialState: string | null;
-    finalState: string[];
     option: number;
+    transitions: { [key: string]: { [key: string]: string[] } };
 }
 
-const Table: React.FC<TableProps> = ({ table, alphabet, initialState, finalState, option }) => {
+const Table: React.FC<TableProps> = ({ graph, alphabet, option, transitions }) => {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
     const openDiv = useRef<HTMLDivElement>(null);
+    const [initialState, setInitialState] = useState<string | null>(null);
+    const [finalStates, setFinalStates] = useState<string[]>([]);
 
     useEffect(() => {
         const run = async () => {
@@ -59,6 +60,13 @@ const Table: React.FC<TableProps> = ({ table, alphabet, initialState, finalState
         run();
     }, [open]);
 
+    useEffect(() => {
+        if (graph) {
+            setInitialState(graph.initState ? graph.initState.getLabel() : null);
+            setFinalStates(graph.finalState ? [graph.finalState.getLabel()] : []);
+        }
+    }, [graph]);
+
     return (
         <>
             <motion.div
@@ -99,7 +107,7 @@ const Table: React.FC<TableProps> = ({ table, alphabet, initialState, finalState
                     {/* container that holds the transition table */}
                     <h2 className="text-white mt-2 text-center font-bold">Transitions</h2>
                     <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
-                        {table && Object.keys(table).length > 0 ? (
+                        {transitions && Object.keys(transitions).length > 0 ? (
                             <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
                                 <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
                                     <tr>
@@ -112,17 +120,17 @@ const Table: React.FC<TableProps> = ({ table, alphabet, initialState, finalState
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {Object.keys(table).map((state) => (
+                                    {Object.keys(transitions).map((state) => (
                                         <tr key={state} className="border-b bg-[var(--color-500)] border-white">
                                             <td className="px-2 py-2 text-center">
-                                                {state === initialState ? `→ ${state}` : finalState.includes(state) ? `* ${state}` : state}
+                                                {state === initialState ? `→ ${state}` : finalStates.includes(state) ? `* ${state}` : state}
                                             </td>
                                             {alphabet.map((symbol, index) => (
                                                 <td key={symbol || `empty_cell_${index}`} className="px-2 py-2 text-center whitespace-nowrap">
-                                                    {table[state][symbol]?.length > 1
-                                                        ? `{${table[state][symbol].join(', ')}}`  // if there are many states, show them in curly braces
-                                                        : table[state][symbol]?.length === 1
-                                                            ? table[state][symbol][0]                // if there are only one state, show it
+                                                    {transitions[state][symbol]?.length > 1
+                                                        ? `{${transitions[state][symbol].join(', ')}}`  // if there are many states, show them in curly braces
+                                                        : transitions[state][symbol]?.length === 1
+                                                            ? transitions[state][symbol][0]                // if there are only one state, show it
                                                             : '-'}
                                                 </td>
                                             ))}

@@ -2,19 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 
 interface PropertiesProps {
+    graph: any;
     alphabet: string[];
-    initialState: string | null;
-    finalState: string[];
-    totalStates: number;
     transitions: { [key: string]: { [key: string]: string[] } };
     option: number;
     str: string;
 }
 
-const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalStates,  finalState , option, str,  transitions }) => {
+const Properties: React.FC<PropertiesProps> = ({ graph, alphabet, transitions, option, str }) => {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
     const openDiv = useRef<HTMLDivElement>(null);
+    const [initialState, setInitialState] = useState<string | null>(null);
+    const [finalStates, setFinalStates] = useState<string[]>([]);
+    const [totalStates, setTotalStates] = useState<number>(0);
 
     useEffect(() => {
         const run = async () => {
@@ -64,6 +65,13 @@ const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalSt
         run();
     }, [open]);
 
+    useEffect(() => {
+        if (graph) {
+            setInitialState(graph.initState ? graph.initState.getLabel() : null);
+            setFinalStates(graph.finalState ? [graph.finalState.getLabel()] : []);
+        }
+    }, [graph]);
+
     return (
         <>
             <motion.div
@@ -110,7 +118,7 @@ const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalSt
                     
                         <h3 className="font-semibold mb-2 text-center">{option === 2 ? 'AFN' : 'AFD'}</h3>
                         <p>Initial state: {initialState}</p>
-                        <p>Final state: {finalState}</p>
+                        <p>Final state: {finalStates.join(', ')}</p>
                         <p>Total of states: {totalStates}</p>
                     </div>
                     {/* container of states (property) */}
