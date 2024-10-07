@@ -25,7 +25,7 @@ function App() {
     }>();
     
     const [network, reset] = useGraphDrawer(divRef.current, graph);
-    const controls = useControls(graph, network, str, reset);
+    const controls = useControls(graph, network, str);
 
     useEffect(() => {
         const g = createGraph(regex);

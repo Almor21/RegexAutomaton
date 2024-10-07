@@ -3,7 +3,7 @@ import { IdType, Network } from 'vis-network';
 import RGraph from '../objects/RGraph';
 import RState from '../objects/RState';
 
-const EXECUTION_STEP = 700;
+const EXECUTION_STEP = 100;
 
 type Step = {
     node: RState;
@@ -17,76 +17,142 @@ function useControls(
     graph: RGraph | null,
     network: Network | null,
     str: string,
-    onStop: () => void
+    onStop?: () => void
 ) {
-    const [intervalCode, setIntervalCode] = useState(-1);
+    const intervalCode = useRef(-1);
     const iletter = useRef(0);
+    const indexStep = useRef(0);
     const stepsStack = useRef<Array<Step>>([]);
+    const finish = useRef(false);
+
+    const paintNode = (idNode: IdType, color: string) => {
+        if (!network) return;
+
+        network.updateClusteredNode(idNode, {
+            borderWidth: 2,
+            color: {
+                border: color
+            }
+        });
+    };
+
+    const paintEdges = (idFrom: IdType, idTo: IdType[], color: string) => {
+        if (!network) return;
+
+        network
+            .getConnectedEdges(idFrom)
+            .filter((e) =>
+                idTo.some((n) => n === network.getConnectedNodes(e)[1])
+            )
+            .forEach((e) => network.updateEdge(e, { color }));
+    };
+
+    const clean = () => {
+        if (!graph) return;
+        paintNode('0', 'white');
+        paintEdges('0', [graph.initState.ID], 'white');
+
+        graph.states.forEach((node) => {
+            paintNode(node.ID, 'white');
+            paintEdges(
+                node.ID,
+                node.connections.map((cn) => cn.next.ID),
+                'white'
+            );
+        });
+    };
 
     const play = () => {
-        if (intervalCode === -1) {
-            setIntervalCode(
-                setInterval(() => {
-                    doStep();
-                }, EXECUTION_STEP)
-            );
+        if (intervalCode.current === -1) {
+            intervalCode.current = setInterval(() => {
+                doStep();
+            }, EXECUTION_STEP);
         } else {
-            clearInterval(intervalCode);
-            setIntervalCode(-1);
+            clearInterval(intervalCode.current);
+            intervalCode.current = -1;
         }
     };
 
     const doStep = () => {
         if (!graph || !network || !str) return;
+
         const lt = str.charAt(iletter.current);
+        let actualStep: Step;
+        let previousNode: IdType;
+        let actualNode: RState;
+
+        if (finish.current) {
+            if (indexStep.current === 0) clean();
+
+            if (indexStep.current > 0) {
+                actualStep = stepsStack.current[indexStep.current - 1];
+                previousNode = actualStep.back;
+                actualNode = actualStep.node;
+
+                paintNode(actualNode.ID, 'green');
+                paintEdges(previousNode, [actualNode.ID], 'green');
+            }
+
+            if (indexStep.current === stepsStack.current.length) {
+                clearInterval(intervalCode.current);
+                intervalCode.current = -1;
+                indexStep.current = 0;
+                return;
+            }
+
+            actualStep = stepsStack.current[indexStep.current];
+            previousNode = actualStep.back;
+            actualNode = actualStep.node;
+
+            paintNode(actualNode.ID, 'yellow');
+            paintEdges(previousNode, [actualNode.ID], 'yellow');
+            indexStep.current++;
+            return;
+        }
 
         // Erase previous connections
         if (stepsStack.current.length > 1) {
             let previousStep =
                 stepsStack.current[stepsStack.current.length - 2];
 
-            network
-                .getConnectedEdges(previousStep.node.ID)
-                .filter((e) => {
-                    if (previousStep.connEps && previousStep.connLet) {
-                        return previousStep.connEps
-                            .concat(previousStep.connLet)
-                            .some(
-                                (n) =>
-                                    network
-                                        .getConnectedNodes(e)[1]
-                                        .toString() === n.ID
-                            );
-                    }
-                })
-                .forEach((e) => network.updateEdge(e, { color: 'white' }));
+            if (!(previousStep.connEps && previousStep.connLet)) return;
+            const connections = previousStep.connEps.concat(
+                previousStep.connLet
+            );
 
-            network.updateClusteredNode(previousStep.node.ID, {
-                borderWidth: 2,
-                color: {
-                    border: 'blue'
-                }
-            });
+            paintEdges(
+                previousStep.node.ID,
+                connections.map((cn) => cn.ID),
+                'white'
+            );
+            paintNode(previousStep.node.ID, 'blue');
         }
 
         // Get Step
-        let actualStep = stepsStack.current[stepsStack.current.length - 1];
+        actualStep = stepsStack.current[stepsStack.current.length - 1];
 
-        let actualNode = actualStep.node;
+        // Not match case
+        if (!actualStep) {
+            clearInterval(intervalCode.current);
+            intervalCode.current = -1;
+            console.log('Not match');
+            return;
+        }
+
+        actualNode = actualStep.node;
         let connEps: RState[] | null;
         let connLet: RState[] | null;
 
-        const prevedge = network
-            .getConnectedEdges(actualNode.ID)
-            .find((e) => network.getConnectedNodes(e)[0] === actualStep.back);
-        if (prevedge) network.updateEdge(prevedge, { color: 'blue' });
+        paintEdges(actualStep.back, [actualNode.ID], 'blue');
+        paintNode(actualNode.ID, 'yellow');
 
-        network.updateClusteredNode(actualNode.ID, {
-            borderWidth: 2,
-            color: {
-                border: 'yellow'
-            }
-        });
+        // Match case
+        if (iletter.current === str.length && actualNode === graph.finalState) {
+            paintNode(actualNode.ID, 'green');
+            finish.current = true;
+            indexStep.current = 0;
+            return;
+        }
 
         if (!actualStep.connLet) {
             // Search routes
@@ -94,27 +160,22 @@ function useControls(
                 .filter((cn) => !cn.value)
                 .map((cn) => cn.next);
             actualStep.connLet = connLet = actualNode.connections
-                .filter((cn) => cn.value === lt)
+                .filter((cn) => lt && cn.value === lt)
                 .map((cn) => cn.next);
         } else {
             connEps = actualStep.connEps;
             connLet = actualStep.connLet;
         }
 
-        network
-            .getConnectedEdges(actualNode.ID)
-            .filter((e) => {
-                if (connEps && connLet) {
-                    return connEps
-                        .concat(connLet)
-                        .some(
-                            (n) =>
-                                network.getConnectedNodes(e)[1].toString() ===
-                                n.ID
-                        );
-                }
-            })
-            .forEach((e) => network.updateEdge(e, { color: 'yellow' }));
+        if (connEps && connLet) {
+            const connections = connEps.concat(connLet);
+
+            paintEdges(
+                actualNode.ID,
+                connections.map((cn) => cn.ID),
+                'yellow'
+            );
+        }
 
         let nextNode;
         let nextLet;
@@ -141,102 +202,19 @@ function useControls(
             if (actualStep.letStep) iletter.current--;
             stepsStack.current.pop();
 
-            network.updateClusteredNode(actualNode.ID, {
-                borderWidth: 2,
-                color: {
-                    border: 'red'
-                }
-            });
-            const edge = network
-                .getConnectedEdges(actualNode.ID)
-                .find(
-                    (e) => network.getConnectedNodes(e)[0] === actualStep.back
-                );
-            if (edge) network.updateEdge(edge, { color: 'red' });
+            paintNode(actualNode.ID, 'red');
+            paintEdges(actualStep.back, [actualNode.ID], 'red');
         }
-
-        // // Do Step
-        // if (stepsStack.current.length === 0) {
-        //     // actualStep = {
-        //     //     node: graph.initState,
-        //     //     available: null,
-        //     //     back: null
-        //     // }
-        // }
-
-        // let nextNode;
-
-        // if (stepsStack.current.length !== 0) {
-        //     const actualRoutes =
-        //         stepsStack.current[stepsStack.current.length - 1];
-
-        //     const edges = network
-        //         .getConnectedEdges(actualRoutes.node.ID)
-        //         .filter((e) =>
-        //             actualRoutes.available.some(
-        //                 (n) => network.getConnectedNodes(e)[1] === n.ID
-        //             )
-        //         );
-        //     edges.forEach((e) => network.updateEdge(e, { color: 'white' }));
-
-        //     nextNode = actualRoutes.available.shift();
-        // }
-
-        // if (nextNode) {
-        //     setIletter(iletter + 1);
-
-        //     network.updateClusteredNode(nextNode.ID, {
-        //         borderWidth: 2,
-        //         color: {
-        //             border: 'yellow'
-        //         }
-        //     });
-
-        //     const connections = nextNode.connections.filter(
-        //         (cn) => !cn.value || cn.value === lt
-        //     );
-
-        //     const edges = network
-        //         .getConnectedEdges(nextNode.ID)
-        //         .filter((r) =>
-        //             connections.some(
-        //                 (cn) => cn.next.ID === network.getConnectedNodes(r)[1]
-        //             )
-        //         );
-        //     edges.forEach((e) => network.updateEdge(e, { color: 'yellow' }));
-
-        //     stepsStack.current.push({
-        //         node: nextNode,
-        //         available: connections.map((cn) => cn.next),
-        //         back: actualRoutes.node
-        //     });
-        // } else {
-        //     setIletter(iletter - 1);
-        //     nextNode = actualRoutes.back;
-
-        //     network.updateClusteredNode(nextNode.ID, {
-        //         color: {
-        //             border: 'red'
-        //         }
-        //     });
-
-        //     const edge = network
-        //         .getConnectedEdges(actualRoutes.node.ID)
-        //         .find(
-        //             (r) =>
-        //                 network.getConnectedNodes(r)[0] === actualRoutes.back.ID
-        //         );
-        //     if (edge) network.updateEdge(edge, { color: 'red' });
-
-        //     stepsStack.current.pop();
-        // }
     };
 
     const stop = () => {
-        clearInterval(intervalCode);
-        setIntervalCode(-1);
+        clean();
+
+        clearInterval(intervalCode.current);
+        intervalCode.current = -1;
         iletter.current = 0;
-        onStop();
+        finish.current = false;
+        indexStep.current = 0;
         if (graph)
             stepsStack.current = [
                 {
@@ -250,7 +228,12 @@ function useControls(
     };
 
     useEffect(() => {
-        stop();
+        clearInterval(intervalCode.current);
+        intervalCode.current = -1;
+        iletter.current = 0;
+        finish.current = false;
+        indexStep.current = 0;
+        
         if (graph?.initState) {
             stepsStack.current = [
                 {
