@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 
-function Table() {
+interface TableProps {
+    table: { [key: string]: { [key: string]: string[] } };
+    alphabet: string[]; 
+    initialState: string | null;
+    finalState: string[];
+    option: number;
+}
+
+const Table: React.FC<TableProps> = ({ table, alphabet, initialState, finalState, option }) => {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
     const openDiv = useRef<HTMLDivElement>(null);
@@ -43,9 +51,6 @@ function Table() {
                     closeDiv.current,
                     {
                         x: '0%'
-                    },
-                    {
-                        type: 'tween'
                     }
                 );
             }
@@ -70,7 +75,7 @@ function Table() {
             </motion.div>
             <motion.div
                 ref={openDiv}
-                className="absolute top-1/2 right-2 z-10 w-52 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl"
+                className="absolute top-1/2 right-2 z-10 w-80 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl p-4 shadow-md"
                 style={{
                     x: '110%',
                     y: '-50%'
@@ -83,12 +88,103 @@ function Table() {
                     </h1>
                     <div
                         className="relative inline-block w-4 ml-3 row-start-1 col-start-1 cursor-pointer"
-                        onClick={() => setOpen(true)}
+                        onClick={() => setOpen(false)}
                     >
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full -rotate-45" />
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full rotate-45" />
                     </div>
                 </div>
+
+                <div className='flex flex-col gap-2 h-full overflow-x-auto '> 
+                    {/* container that holds the transition table  */}
+                    <h2 className="text-white mt-2 text-center font-bold">Transitions</h2>
+                    <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
+                        <table className="min-w-full table-auto text-sm text-left text-white rounded-lg ">
+                            <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
+                                <tr>
+                                    <th scope="col" className="px-6 py-3">State</th>
+                                    {alphabet.map((symbol, index) => (
+                                        <th key={symbol || `empty_${index}`} scope="col" className="px-6 py-3">
+                                            {symbol === "" ? '&' : symbol}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.keys(table).map((state) => (
+                                    <tr key={state} className="border-b bg-[var(--color-500)] border-white">
+                                        <td className="px-2 py-2 text-center">
+                                            {state === initialState ? `→ ${state}` : finalState.includes(state) ? `* ${state}` : state}
+                                        </td>
+                                        {alphabet.map((symbol, index) => (
+                                            <td key={symbol || `empty_cell_${index}`} className="px-2 py-2 text-center whitespace-nowrap">
+                                                {table[state][symbol]?.length > 1
+                                                    ? `{${table[state][symbol].join(', ')}}`  // if there are many states, show them in curly braces
+                                                    : table[state][symbol]?.length === 1
+                                                    ? table[state][symbol][0]                // if there are only one state, show it
+                                                    : '-'} 
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                     {/* container that will holds the states table  */}
+                     {/* the logic has not been implemented */}
+                     
+                     {(option === 0 || option === 1) && (
+                        <>
+                            <h2 className="text-white mt-4 text-center font-bold">States</h2>
+                            <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
+                                <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
+                                    <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-3">AFD State</th>
+                                            <th scope="col" className="px-6 py-3">AFN States</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {/* replace all with the States table */}
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">1</td>
+                                            <td className="px-6 py-3 text-center">0, 1</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        <tr className="border-b bg-[var(--color-500)] border-white">
+                                            <td className="px-6 py-3">2</td>
+                                            <td className="px-6 py-3 text-center">2, 3, 4</td>
+                                        </tr>
+                                        {/* replace all with the States table */}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
+                        
+                     )}
+
+                </div>
+                
             </motion.div>
         </>
     );

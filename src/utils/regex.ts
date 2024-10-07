@@ -12,7 +12,7 @@ import RGraph from '../objects/RGraph';
 
 export function validate(regex: string): boolean {
     // regex to detect valid characters
-    const validPattern = /^[a-zA-Z0-9()+*?|]*$/;
+    const validPattern = /^[a-zA-Z()+*?|&]*$/;
 
     // verify if expression have only characters allowed 
     if (!validPattern.test(regex)) {
@@ -20,7 +20,7 @@ export function validate(regex: string): boolean {
     }
 
     // regex to detect invalid paterns like *?, +?, **, ++, etc.
-    const invalidPattern = /[*+?]{2,}|[*+?][*+?]|[?*+](?=\))|[|]{2,}|^\||\|$/;
+    const invalidPattern = /[+?]{2,}|[+?][*+?]|[|]{2,}|^\||\|$|\(\)/;
 
     // Verify if expression have invalid patterns
     if (invalidPattern.test(regex)) {

@@ -1,7 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 
-function Properties() {
+interface PropertiesProps {
+    alphabet: string[];
+    initialState: string | null;
+    finalState: string[];
+    totalStates: number;
+    transitions: { [key: string]: { [key: string]: string[] } };
+    option: number;
+}
+
+const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalStates,  finalState , option, transitions }) => {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
     const openDiv = useRef<HTMLDivElement>(null);
@@ -70,7 +79,7 @@ function Properties() {
             </motion.div>
             <motion.div
                 ref={openDiv}
-                className="absolute top-1/2 left-2 z-10 w-52 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl"
+                className="absolute top-1/2 left-2 z-10 w-64 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl p-4 shadow-md"
                 style={{
                     x: '-110%',
                     y: '-50%'
@@ -83,12 +92,38 @@ function Properties() {
                     </h1>
                     <div
                         className="relative inline-block w-4 mr-3 row-start-1 col-start-2 cursor-pointer"
-                        onClick={() => setOpen(true)}
+                        onClick={() => setOpen(false)} 
                     >
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full -rotate-45" />
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full rotate-45" />
                     </div>
                 </div>
+                <div className="flex flex-col gap-2 h-full">
+                    {/* Alphabet container */}
+                    <div className="bg-[var(--color-500)] p-3 rounded-lg mt-2 text-white shadow-md max-h-24 overflow-y-auto">
+                        <h3 className="font-semibold mb-2 text-center">Alphabet</h3>
+                        <p className="text-center">Σ = &#123; {alphabet.join(', ')} &#125;</p>
+                    </div>
+                    {/* container of some info */}
+                    <div className="bg-[var(--color-500)] p-4 rounded-lg text-white">
+                    
+                        <h3 className="font-semibold mb-2 text-center">{option === 2 ? 'AFN' : 'AFD'}</h3>
+                        <p>Initial state: {initialState}</p>
+                        <p>Final State: {finalState}</p>
+                        <p>Total of states: {totalStates}</p>
+                    </div>
+                    {/* container of states (property) */}
+                    <div className="bg-[var(--color-500)] p-4 rounded-lg text-white">
+                        <h3 className="font-semibold mb-2 text-center">States</h3>
+                        // show the selected state
+                    </div>
+                    {/* container of states (property) */}
+                    <div className="bg-[var(--color-500)] p-4 rounded-lg mb-2 text-white">
+                        <h3 className="font-semibold mb-2 text-center">STR</h3>
+                        // whatever STR does
+                    </div>
+                </div>
+                
             </motion.div>
         </>
     );
