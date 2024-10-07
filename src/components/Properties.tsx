@@ -109,7 +109,7 @@ const Properties: React.FC<PropertiesProps> = ({ alphabet, initialState, totalSt
                     
                         <h3 className="font-semibold mb-2 text-center">{option === 2 ? 'AFN' : 'AFD'}</h3>
                         <p>Initial state: {initialState}</p>
-                        <p>Final State: {finalState}</p>
+                        <p>Final state: {finalState}</p>
                         <p>Total of states: {totalStates}</p>
                     </div>
                     {/* container of states (property) */}
