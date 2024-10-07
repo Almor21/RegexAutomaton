@@ -1,10 +1,11 @@
 import RGraph from '../objects/RGraph';
 import RState from '../objects/RState';
+import { AFDTableType, AFNTableType, TableType } from '../types/afTypes';
 
 function searchTransitions(
     state: RState[],
     allStates: RState[],
-    transitionTable: any,
+    transitionTable: AFNTableType | AFDTableType,
     symbol?: string
 ): Set<RState> {
     let sym = symbol ? symbol : '';
@@ -17,7 +18,7 @@ function searchTransitions(
         const currentStateLabel = currentState.getLabel();
 
         // Buscamos todas las transiciones con el simbolo 
-        const symbolTransitions = transitionTable[currentStateLabel][sym];
+        const symbolTransitions = transitionTable.data[currentStateLabel][sym];
 
         if (symbolTransitions) {
             for (const nextStateLabel of symbolTransitions) {
@@ -40,7 +41,7 @@ function searchTransitions(
 export function cerraduraEpsilon(
     state: RState[],
     allStates: RState[],
-    transitionTable: any
+    transitionTable: AFNTableType | AFDTableType
 ): RState[] {
     const epsilonClousure = searchTransitions(
         state,
@@ -63,7 +64,7 @@ export function mueve(
     state: RState[],
     symbol: string,
     allStates: RState[],
-    transitionTable: any
+    transitionTable: AFNTableType | AFDTableType
 ): RState[] {
     const mueveSymbol = searchTransitions(
         state,
