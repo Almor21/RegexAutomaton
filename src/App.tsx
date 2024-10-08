@@ -30,17 +30,18 @@ function App() {
     const [str, setStr] = useState('');
     const [option, setOption] = useState(0);
     const [selectState, setSelectState] = useState<RState | null>(null);
-
-    const [graph, setGraph] = useState<RGraph | null>(null);
-    const [alphabet, setAlphabet] = useState<string[]>([]);
-    const [table, setTable] = useState<AFNTableType | AFDTableType>();
-    const [equivalence, setEquivalence] =
-        useState<EquivalenceTableType | null>();
     const [clickPosition, setClickPosition] = useState({
         x: 0,
         y: 0
     });
 
+    const [graph, setGraph] = useState<RGraph | null>(null);
+    const [alphabet, setAlphabet] = useState<string[]>([]);
+    const [table, setTable] = useState<AFNTableType | AFDTableType>();
+
+    const [equivalence, setEquivalence] =
+        useState<EquivalenceTableType | null>();
+    const [identics, setIdentics] = useState<string[]>([]);
 
     const [network, reset] = useGraphDrawer(divRef.current, graph);
     const controls = useControls(graph, network, str);
@@ -82,6 +83,8 @@ function App() {
         );
         setTable(afdOptiTable);
         setGraph(tableToGraph(afdOptiTable));
+        setEquivalence(significantStates);
+        setIdentics(identics);
     }, [regex, option]);
 
     useEffect(() => {
@@ -123,9 +126,16 @@ function App() {
                 />
                 <Table
                     graph={graph}
-                    alphabet={alphabet}
+                    alphabet={['', ...alphabet]}
                     option={option}
                     transitions={table?.data}
+                    equivalence={
+                        option === 1 ? equivalence ?? undefined : undefined
+                    }
+                    significantStates={
+                        option === 2 ? equivalence ?? undefined : undefined
+                    }
+                    identics={identics}
                 />
 
                 <div ref={divRef} className="w-full h-full"></div>
