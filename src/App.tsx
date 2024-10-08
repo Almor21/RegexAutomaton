@@ -20,6 +20,7 @@ import {
 import { optimizarAFD } from './utils/significantStatesUtils';
 
 import { AFDTableType, AFNTableType } from './types/afTypes';
+import { EquivalenceTableType } from './types/subsetTypes';
 
 function App() {
     const [regex, setRegex] = useState('');
@@ -28,6 +29,8 @@ function App() {
 
     const [alphabet, setAlphabet] = useState<string[]>([]);
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
+    const [equivalence, setEquivalence] =
+        useState<EquivalenceTableType | null>();
     const divRef = useRef<HTMLDivElement>(null);
 
     const [graph, setGraph] = useState<RGraph | null>(null);
@@ -52,10 +55,14 @@ function App() {
             return;
         }
 
-        const [afdTable, afdStates] = convertAFN_to_AFD_NoOp(afnGraph, aph);
+        const [afdTable, afdStates, equivalence] = convertAFN_to_AFD_NoOp(
+            afnGraph,
+            aph
+        );
         if (option === 1) {
             setTable(afdTable);
             setGraph(tableToGraph(afdTable));
+            setEquivalence(equivalence);
             return;
         }
 
