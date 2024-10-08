@@ -7,3 +7,14 @@
   --color-700: #929292;
   --color-900: #EAEAEA;
 }
+
+*::-webkit-scrollbar {
+	background-color: rgb(0, 0, 0, 0);
+	border-radius: 99999px;
+	width: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: white;
+	border-radius: 9999px;
+}
