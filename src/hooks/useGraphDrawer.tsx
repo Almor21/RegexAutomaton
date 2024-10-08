@@ -48,11 +48,23 @@ function useGraphDrawer(
                 if (visited.includes(st.ID)) continue;
                 visited.push(st.ID);
 
-                nodes_array.push({
-                    id: st.ID,
-                    label: st.getLabel(),
-                    x: level
-                });
+                if (st === graph.finalState) {
+                    nodes_array.push({
+                        id: st.ID,
+                        label: st.getLabel(),
+                        x: level,
+                        shapeProperties: {
+                            borderDashes: [5,5,]
+                        }
+                    });
+                } else {
+                    nodes_array.push({
+                        id: st.ID,
+                        label: st.getLabel(),
+                        x: level
+                    });
+
+                }
 
                 next_lv.push(...st.connections.map((cn) => cn.next));
                 edges_array.push(
@@ -99,7 +111,7 @@ function useGraphDrawer(
                         min: 25,
                         max: 25
                     }
-                }
+                },
             },
             edges: {
                 chosen: false,
