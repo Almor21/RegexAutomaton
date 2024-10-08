@@ -51,12 +51,13 @@ function App() {
 
         const afnGraph = createGraph(regex);
         const aph = getAPH(regex);
+        if (!aph.includes('&')) aph.unshift('');
 
         if (!afnGraph) return;
 
         afnGraph.setLabels();
         setAlphabet(aph);
-        const afnTable = getTransitionTable(afnGraph, ['', ...aph]);
+        const afnTable = getTransitionTable(afnGraph, [...aph]);
         if (option === 0) {
             setTable(afnTable);
             setGraph(afnGraph);
@@ -126,7 +127,7 @@ function App() {
                 />
                 <Table
                     graph={graph}
-                    alphabet={['', ...alphabet]}
+                    alphabet={[...alphabet]}
                     option={option}
                     transitions={table?.data}
                     equivalence={

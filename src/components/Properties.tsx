@@ -117,7 +117,7 @@ function Properties({
                         <span className="absolute top-1/2 left-0 -translate-y-1/2 inline-block bg-white w-full h-1 rounded-full rotate-45" />
                     </div>
                 </div>
-                <div className="h-full px-2 py-2 flex flex-col gap-2 overflow-x-auto">
+                <div className="h-full p-2 flex flex-col gap-2 overflow-x-auto">
                     {/* container of states (property) */}
                     <div className="bg-[var(--color-500)] p-3 rounded-lg text-white ">
                         <h3 className="font-semibold mb-2 text-center">
