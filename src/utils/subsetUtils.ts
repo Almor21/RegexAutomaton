@@ -1,6 +1,6 @@
 import RState from '../objects/RState';
 import { AFDTableType, AFNTableType } from '../types/afTypes';
-import { DState } from '../types/subsetTypes';
+import { DState, EquivalenceTableType } from '../types/subsetTypes';
 import { cerraduraEpsilon, mueve } from './subsetMethodsUtils';
 
 export function SubSets(
@@ -8,7 +8,7 @@ export function SubSets(
     allStates: RState[],
     transitionTable: AFNTableType,
     symbols: string[] // Alfabeto del autómata (sin incluir epsilon)
-): [AFDTableType, DState[], { [key: string]: Set<string> }] {
+): [AFDTableType, DState[], EquivalenceTableType] {
     let labelCounter = 0; // Contador para asignar letras a los estados
     const getNextLabel = () => String.fromCharCode(65 + labelCounter++); // A, B, C...
 

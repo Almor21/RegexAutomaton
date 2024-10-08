@@ -2,17 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 import RGraph from '../objects/RGraph';
 import { TableType } from '../types/afTypes';
+import { EquivalenceTableType } from '../types/subsetTypes';
 
 function Table({
     graph,
     alphabet,
     option,
-    transitions
+    transitions,
+    equivalence,
+    significantStates,
+    identics, // Nuevo prop para los estados idénticos
 }: {
     graph: RGraph | null;
     alphabet: string[];
     option: number;
     transitions?: TableType;
+    equivalence?: EquivalenceTableType;
+    significantStates?: EquivalenceTableType; // La tabla de equivalencia para el AFD optimizado
+    identics?: string[]; // Los estados idénticos para el AFD optimizado
 }) {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
@@ -184,12 +191,10 @@ function Table({
                     </div>
 
                     {/* container that will hold the states table */}
-                    {/* the logic has not been implemented */}
-
-                    {(option === 0 || option === 1) && (
+                    {(option === 1 && equivalence) || (option === 2 && significantStates) ? (
                         <>
                             <h2 className="text-white mt-4 text-center font-bold">
-                                States
+                                States Equivalence
                             </h2>
                             <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
                                 <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
@@ -205,24 +210,52 @@ function Table({
                                                 scope="col"
                                                 className="px-6 py-3"
                                             >
-                                                AFN States
+                                                AFN States Equivalents
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {/* replace all with the States table */}
-                                        <tr className="border-b bg-[var(--color-500)] border-white">
-                                            <td className="px-6 py-3">1</td>
-                                            <td className="px-6 py-3 text-center">
-                                                0, 1
-                                            </td>
-                                        </tr>
-
-                                        {/* replace all with the States table */}
+                                        {(option === 1 ? Object.entries(equivalence!) : Object.entries(significantStates!)).map(
+                                            ([afdState, afnStates]) => (
+                                                <tr
+                                                    key={afdState}
+                                                    className="border-b bg-[var(--color-500)] border-white"
+                                                >
+                                                    <td className="px-6 py-3 text-center">
+                                                        {afdState}
+                                                    </td>
+                                                    <td className="px-6 py-3 text-center">
+                                                        {[...afnStates].join(
+                                                            ', '
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
                         </>
+                    ) : null}
+
+                    {/* Nuevo contenedor para identics cuando option === 2 */}
+                    {option === 2 && identics && (
+                        <div className="mt-4 text-white">
+                            <h2 className="text-white text-center font-bold">
+                                Identical States
+                            </h2>
+                            <div className="bg-[var(--color-500)] p-3 rounded-lg shadow-md">
+                                {identics.length > 0 ? (
+                                    identics.map((group, index) => (
+                                        <div key={index} className="mb-2">
+                                            <p>{`Group ${index + 1}: ${Array.isArray(group) ? group.join(', ') : group}`}</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No identical states found.</p>
+                                )}
+                            </div>
+                        </div>
                     )}
                 </div>
             </motion.div>

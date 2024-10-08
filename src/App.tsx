@@ -20,6 +20,7 @@ import {
 import { optimizarAFD } from './utils/significantStatesUtils';
 
 import { AFDTableType, AFNTableType } from './types/afTypes';
+import { EquivalenceTableType } from './types/subsetTypes';
 
 function App() {
     const [regex, setRegex] = useState('');
@@ -28,12 +29,16 @@ function App() {
 
     const [alphabet, setAlphabet] = useState<string[]>([]);
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
+    const [equivalence, setEquivalence] =
+        useState<EquivalenceTableType | null>();
     const divRef = useRef<HTMLDivElement>(null);
 
     const [graph, setGraph] = useState<RGraph | null>(null);
 
     const [network, reset] = useGraphDrawer(divRef.current, graph);
     const controls = useControls(graph, network, str);
+
+    const [identics, setIdentics] = useState<string[]>([]);
 
     useEffect(() => {
         if (!regex) return;
@@ -52,10 +57,14 @@ function App() {
             return;
         }
 
-        const [afdTable, afdStates] = convertAFN_to_AFD_NoOp(afnGraph, aph);
+        const [afdTable, afdStates, equivalence] = convertAFN_to_AFD_NoOp(
+            afnGraph,
+            aph
+        );
         if (option === 1) {
             setTable(afdTable);
             setGraph(tableToGraph(afdTable));
+            setEquivalence(equivalence);
             return;
         }
 
@@ -68,6 +77,9 @@ function App() {
         );
         setTable(afdOptiTable);
         setGraph(tableToGraph(afdOptiTable));
+        setEquivalence(significantStates);
+        setIdentics(identics);
+        console.log(significantStates, identics);
     }, [regex, option]);
 
     return (
@@ -90,9 +102,12 @@ function App() {
                 />
                 <Table
                     graph={graph}
-                    alphabet={alphabet}
+                    alphabet={['', ...alphabet]}
                     option={option}
                     transitions={table?.data}
+                    equivalence={option === 1 ? equivalence ?? undefined : undefined}
+                    significantStates={option === 2 ? equivalence ?? undefined : undefined}
+                    identics={identics}
                 />
 
                 <div ref={divRef} className="w-full h-full"></div>
