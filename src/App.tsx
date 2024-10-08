@@ -38,6 +38,8 @@ function App() {
     const [network, reset] = useGraphDrawer(divRef.current, graph);
     const controls = useControls(graph, network, str);
 
+    const [identics, setIdentics] = useState<string[]>([]);
+
     useEffect(() => {
         if (!regex) return;
 
@@ -75,6 +77,9 @@ function App() {
         );
         setTable(afdOptiTable);
         setGraph(tableToGraph(afdOptiTable));
+        setEquivalence(significantStates);
+        setIdentics(identics);
+        console.log(significantStates, identics);
     }, [regex, option]);
 
     return (
@@ -97,9 +102,12 @@ function App() {
                 />
                 <Table
                     graph={graph}
-                    alphabet={alphabet}
+                    alphabet={['', ...alphabet]}
                     option={option}
                     transitions={table?.data}
+                    equivalence={option === 1 ? equivalence ?? undefined : undefined}
+                    significantStates={option === 2 ? equivalence ?? undefined : undefined}
+                    identics={identics}
                 />
 
                 <div ref={divRef} className="w-full h-full"></div>
