@@ -34,17 +34,24 @@ function App() {
         x: 0,
         y: 0
     });
+    const [executionTime, setExecutionTime] = useState(100);
 
     const [graph, setGraph] = useState<RGraph | null>(null);
     const [alphabet, setAlphabet] = useState<string[]>([]);
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
 
-    const [equivalence, setEquivalence] =
-        useState<EquivalenceTableType | null>(null);
+    const [equivalence, setEquivalence] = useState<EquivalenceTableType | null>(
+        null
+    );
     const [identics, setIdentics] = useState<string[]>([]);
 
+    
     const [network, reset] = useGraphDrawer(divRef.current, graph);
-    const controls = useControls(graph, network, str);
+    const controls = useControls(graph, network, str, executionTime);
+    
+    const changeExecutionTime = (n: number) => {
+        setExecutionTime(n >= 100 ? n : 100);
+    };
 
     useEffect(() => {
         if (!regex) return;
@@ -53,9 +60,9 @@ function App() {
         const aph = getAPH(regex);
         if (!afnGraph) return;
 
-        setAlphabet(!aph.includes('&') ? ['', ...aph]: aph);
+        setAlphabet(!aph.includes('&') ? ['', ...aph] : aph);
         afnGraph.setLabels();
-        const afnTable = getTransitionTable(afnGraph, aph);
+        const afnTable = getTransitionTable(afnGraph, ['',...aph]);
         if (option === 0) {
             setTable(afnTable);
             setGraph(afnGraph);
@@ -129,17 +136,13 @@ function App() {
                     alphabet={[...alphabet]}
                     option={option}
                     transitions={table?.data}
-                    equivalence={
-                        option === 1 ? equivalence : null
-                    }
-                    significantStates={
-                        option === 2 ? equivalence : null
-                    }
+                    equivalence={option === 1 ? equivalence : null}
+                    significantStates={option === 2 ? equivalence : null}
                     identics={identics}
                 />
 
                 <div ref={divRef} className="h-full"></div>
-                <ControlsDisplay controls={controls} />
+                <ControlsDisplay controls={controls} onChangeTime={changeExecutionTime} />
             </section>
         </div>
     );
