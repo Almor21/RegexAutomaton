@@ -1,17 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, animate } from 'framer-motion';
 import RGraph from '../objects/RGraph';
+import RState from '../objects/RState';
 
 function Properties({
     graph,
     alphabet,
     option,
-    str
+    str,
+    selectState
 }: {
     graph: RGraph | null;
     alphabet?: string[];
     option: number;
     str: string;
+    selectState: RState | null;
 }) {
     const [open, setOpen] = useState(false);
     const closeDiv = useRef<HTMLDivElement>(null);
@@ -117,7 +120,9 @@ function Properties({
                 <div className="h-full px-2 py-2 flex flex-col gap-2 overflow-x-auto">
                     {/* container of states (property) */}
                     <div className="bg-[var(--color-500)] p-3 rounded-lg text-white ">
-                        <h3 className="font-semibold mb-2 text-center">Test String</h3>
+                        <h3 className="font-semibold mb-2 text-center">
+                            Test String
+                        </h3>
                         <p className="overflow-x-auto h-6">{str}</p>
                     </div>
                     {/* Alphabet container */}
@@ -143,7 +148,19 @@ function Properties({
                         <h3 className="font-semibold mb-2 text-center">
                             States
                         </h3>
-                        // show the selected state
+                        <p>
+                            Label: {selectState ? selectState.getLabel() : ''}
+                        </p>
+                        <p>Connections:</p>
+                        {selectState ? (
+                            selectState.connections.map((cn) => (
+                                <p>
+                                    {cn.value || '&'} -&gt; {cn.next.getLabel()}
+                                </p>
+                            ))
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
             </motion.div>

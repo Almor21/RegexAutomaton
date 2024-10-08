@@ -10,6 +10,8 @@ import useControls from './hooks/useControls';
 import './App.css';
 
 import RGraph from './objects/RGraph';
+import RState from './objects/RState';
+
 import {
     createGraph,
     getAPH,
@@ -23,21 +25,22 @@ import { AFDTableType, AFNTableType } from './types/afTypes';
 import { EquivalenceTableType } from './types/subsetTypes';
 
 function App() {
+    const divRef = useRef<HTMLDivElement>(null);
     const [regex, setRegex] = useState('');
     const [str, setStr] = useState('');
     const [option, setOption] = useState(0);
+    const [selectState, setSelectState] = useState<RState | null>(null);
 
+    const [graph, setGraph] = useState<RGraph | null>(null);
     const [alphabet, setAlphabet] = useState<string[]>([]);
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
     const [equivalence, setEquivalence] =
         useState<EquivalenceTableType | null>();
-    const divRef = useRef<HTMLDivElement>(null);
     const [clickPosition, setClickPosition] = useState({
         x: 0,
         y: 0
     });
 
-    const [graph, setGraph] = useState<RGraph | null>(null);
 
     const [network, reset] = useGraphDrawer(divRef.current, graph);
     const controls = useControls(graph, network, str);
@@ -85,7 +88,7 @@ function App() {
         if (!(network && graph)) return;
         const id = network.getNodeAt(clickPosition);
 
-        console.log(clickPosition, graph.getState(id as string));
+        setSelectState(graph.getState(id as string) || null);
     }, [clickPosition]);
 
     useEffect(() => {
@@ -116,6 +119,7 @@ function App() {
                     alphabet={alphabet}
                     option={option}
                     str={str}
+                    selectState={selectState}
                 />
                 <Table
                     graph={graph}
