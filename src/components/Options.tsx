@@ -12,7 +12,7 @@ function Options({
 }) {
     return (
         <div className="absolute top-4 left-1/2 z-10 -translate-x-1/2 grid grid-cols-3 bg-[var(--color-500)] border-2 border-[var(--color-700)] shadow-[2px_4px_4px_rgba(0,0,0,0.6)] text-xs rounded-xl overflow-hidden">
-            {['AFN', 'AFD - No optimo', 'AFD - Optimo'].map((op, index) => (
+            {['NFA', 'Unoptimized - DFA', 'Minimized - DFA'].map((op, index) => (
                 <div
                     key={index}
                     className="relative w-44 text-center font-semibold cursor-pointer"

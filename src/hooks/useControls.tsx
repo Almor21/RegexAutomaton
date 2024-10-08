@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { IdType, Network } from 'vis-network';
 import RGraph from '../objects/RGraph';
 import RState from '../objects/RState';
@@ -17,6 +17,7 @@ function useControls(
     graph: RGraph | null,
     network: Network | null,
     str: string,
+    executionTime: number,
     onStop?: () => void
 ) {
     const intervalCode = useRef(-1);
@@ -70,7 +71,7 @@ function useControls(
         if (intervalCode.current === -1) {
             intervalCode.current = setInterval(() => {
                 doStep();
-            }, EXECUTION_STEP);
+            }, executionTime);
         } else {
             clearInterval(intervalCode.current);
             intervalCode.current = -1;
