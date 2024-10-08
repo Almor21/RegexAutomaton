@@ -11,7 +11,7 @@ function Table({
     transitions,
     equivalence,
     significantStates,
-    identics, // Nuevo prop para los estados idénticos
+    identics // Nuevo prop para los estados idénticos
 }: {
     graph: RGraph | null;
     alphabet: string[];
@@ -96,12 +96,11 @@ function Table({
             </motion.div>
             <motion.div
                 ref={openDiv}
-                className="absolute top-1/2 right-2 z-10 w-80 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl p-4 shadow-md"
+                className="absolute top-1/2 right-2 z-10 w-80 h-[95%] grid grid-rows-[auto_1fr] bg-[var(--color-300)] rounded-xl p-4 shadow-[1px_3px_6px_rgba(0,0,0,0.4)]"
                 style={{
                     x: '110%',
                     y: '-50%'
                 }}
-                onClick={() => setOpen(false)}
             >
                 <div className="grid grid-cols-[1fr_auto] items-center">
                     <h1 className="text-white py-1 row-start-1 col-start-1 col-end-3 text-center border-b-2 border-white">
@@ -116,87 +115,116 @@ function Table({
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-2 h-full overflow-x-auto">
+                <div className="h-full p-2 flex flex-col gap-2 overflow-auto">
                     {/* container that holds the transition table */}
-                    <h2 className="text-white mt-2 text-center font-bold">
-                        Transitions
-                    </h2>
-                    <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
-                        {transitions && Object.keys(transitions).length > 0 ? (
-                            <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
-                                <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
-                                    <tr>
-                                        <th scope="col" className="px-6 py-3">
-                                            State
-                                        </th>
-                                        {alphabet.map((symbol, index) => (
+                    <div
+                        className="h-52 grid grid-rows-[auto_1fr]"
+                        style={option === 0 ? {
+                            height: '100%'
+                        }: {}}
+                    >
+                        <h2 className="text-white mt-2 text-center font-bold">
+                            Transitions
+                        </h2>
+                        <div className="h-50 shadow-md rounded-lg bg-[var(--color-500)] overflow-y-auto">
+                            {transitions &&
+                            Object.keys(transitions).length > 0 ? (
+                                <table className="w-full table-auto text-sm text-left text-white rounded-lg">
+                                    <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
+                                        <tr>
                                             <th
-                                                key={symbol || `empty_${index}`}
                                                 scope="col"
                                                 className="px-6 py-3"
                                             >
-                                                {symbol === '' ? '&' : symbol}
+                                                State
                                             </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.keys(transitions).map((state) => (
-                                        <tr
-                                            key={state}
-                                            className="border-b bg-[var(--color-500)] border-white"
-                                        >
-                                            <td className="px-2 py-2 text-center">
-                                                {state === initialState
-                                                    ? `→ ${state}`
-                                                    : finalStates.includes(
-                                                          state
-                                                      )
-                                                    ? `* ${state}`
-                                                    : state}
-                                            </td>
                                             {alphabet.map((symbol, index) => (
-                                                <td
+                                                <th
                                                     key={
                                                         symbol ||
-                                                        `empty_cell_${index}`
+                                                        `empty_${index}`
                                                     }
-                                                    className="px-2 py-2 text-center whitespace-nowrap"
+                                                    scope="col"
+                                                    className="px-6 py-3"
                                                 >
-                                                    {transitions[state][symbol]
-                                                        ?.length > 1
-                                                        ? `{${transitions[
-                                                              state
-                                                          ][symbol].join(
-                                                              ', '
-                                                          )}}` // if there are many states, show them in curly braces
-                                                        : transitions[state][
-                                                              symbol
-                                                          ]?.length === 1
-                                                        ? transitions[state][
-                                                              symbol
-                                                          ][0] // if there are only one state, show it
-                                                        : '-'}
-                                                </td>
+                                                    {symbol === ''
+                                                        ? '&'
+                                                        : symbol}
+                                                </th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="text-center py-10 text-white">
-                                No data to display
-                            </div>
-                        )}
+                                    </thead>
+                                    <tbody>
+                                        {Object.keys(transitions).map(
+                                            (state) => (
+                                                <tr
+                                                    key={state}
+                                                    className="border-b bg-[var(--color-500)] border-white"
+                                                >
+                                                    <td className="px-2 py-2 text-center">
+                                                        {state === initialState
+                                                            ? `→ ${state}`
+                                                            : finalStates.includes(
+                                                                  state
+                                                              )
+                                                            ? `* ${state}`
+                                                            : state}
+                                                    </td>
+                                                    {alphabet.map(
+                                                        (symbol, index) => (
+                                                            <td
+                                                                key={
+                                                                    symbol ||
+                                                                    `empty_cell_${index}`
+                                                                }
+                                                                className="p-2 text-center whitespace-nowrap"
+                                                            >
+                                                                {transitions[
+                                                                    state
+                                                                ][symbol]
+                                                                    ?.length > 1
+                                                                    ? `{${transitions[
+                                                                          state
+                                                                      ][
+                                                                          symbol
+                                                                      ].join(
+                                                                          ', '
+                                                                      )}}` // if there are many states, show them in curly braces
+                                                                    : transitions[
+                                                                          state
+                                                                      ][symbol]
+                                                                          ?.length ===
+                                                                      1
+                                                                    ? transitions[
+                                                                          state
+                                                                      ][
+                                                                          symbol
+                                                                      ][0] // if there are only one state, show it
+                                                                    : '-'}
+                                                            </td>
+                                                        )
+                                                    )}
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="text-center py-10 text-white">
+                                    No data to display
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* container that will hold the states table */}
-                    {(option === 1 && equivalence) || (option === 2 && significantStates) ? (
-                        <>
+                    {(option === 1 && equivalence) ||
+                    (option === 2 && significantStates) ? (
+                        <div className="h-52 grid grid-rows-[auto_1fr]">
                             <h2 className="text-white mt-4 text-center font-bold">
                                 States Equivalence
                             </h2>
-                            <div className="overflow-x-auto overflow-y-auto max-h-50 shadow-md rounded-lg bg-[var(--color-500)]">
+                            <div className="overflow-y-auto h-full shadow-md rounded-lg bg-[var(--color-500)]">
                                 <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
                                     <thead className="sticky top-0 text-xs text-white font-bold bg-[var(--color-500)] border-b border-white">
                                         <tr>
@@ -215,40 +243,43 @@ function Table({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {(option === 1 ? Object.entries(equivalence!) : Object.entries(significantStates!)).map(
-                                            ([afdState, afnStates]) => (
-                                                <tr
-                                                    key={afdState}
-                                                    className="border-b bg-[var(--color-500)] border-white"
-                                                >
-                                                    <td className="px-6 py-3 text-center">
-                                                        {afdState}
-                                                    </td>
-                                                    <td className="px-6 py-3 text-center">
-                                                        {[...afnStates].join(
-                                                            ', '
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            )
-                                        )}
+                                        {(option === 1
+                                            ? Object.entries(equivalence!)
+                                            : Object.entries(significantStates!)
+                                        ).map(([afdState, afnStates]) => (
+                                            <tr
+                                                key={afdState}
+                                                className="border-b bg-[var(--color-500)] border-white"
+                                            >
+                                                <td className="px-6 py-3 text-center">
+                                                    {afdState}
+                                                </td>
+                                                <td className="px-6 py-3 text-center">
+                                                    {[...afnStates].join(', ')}
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
-                        </>
+                        </div>
                     ) : null}
 
                     {/* Nuevo contenedor para identics cuando option === 2 */}
                     {option === 2 && identics && (
-                        <div className="mt-4 text-white">
+                        <div className="h-36 mt-4 grid grid-rows-[auto_1fr]">
                             <h2 className="text-white text-center font-bold">
                                 Identical States
                             </h2>
-                            <div className="bg-[var(--color-500)] p-3 rounded-lg shadow-md">
+                            <div className="text-white bg-[var(--color-500)] p-3 rounded-lg shadow-md">
                                 {identics.length > 0 ? (
                                     identics.map((group, index) => (
                                         <div key={index} className="mb-2">
-                                            <p>{`Group ${index + 1}: ${Array.isArray(group) ? group.join(', ') : group}`}</p>
+                                            <p>{`Group ${index + 1}: ${
+                                                Array.isArray(group)
+                                                    ? group.join(', ')
+                                                    : group
+                                            }`}</p>
                                         </div>
                                     ))
                                 ) : (
