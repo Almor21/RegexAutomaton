@@ -44,7 +44,7 @@ function InputRegex({
     return (
         <div className="max-w-[1280px] w-full grid grid-cols-[auto_1fr_auto] gap-8">
             <img
-                src="/Logo.svg"
+                src="/logo.svg"
                 alt="Logo Image"
                 className="filter invert drop-shadow-[2px_4px_4px_rgba(0,0,0,0.6)]"
                 width={100}
