@@ -232,7 +232,7 @@ function Table({
                     (option === 2 && significantStates) ? (
                         <div className="h-52 grid grid-rows-[auto_1fr]">
                             <h2 className="text-white mt-4 text-center font-bold">
-                                Equivalent States
+                                {option === 1 ? <>Equivalent States</>: <>Significant States</>}
                             </h2>
                             <div className="overflow-y-auto h-full shadow-md rounded-lg bg-[var(--color-500)]">
                                 <table className="min-w-full table-auto text-sm text-left text-white rounded-lg">
@@ -248,7 +248,7 @@ function Table({
                                                 scope="col"
                                                 className="px-6 py-3"
                                             >
-                                                AFN Equivalent States
+                                                    {option === 1 ? <>AFN Equivalent States</>: <>Significant States</>}
                                             </th>
                                         </tr>
                                     </thead>
