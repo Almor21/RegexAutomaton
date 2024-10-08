@@ -131,13 +131,18 @@ function Properties({
                             Alphabet
                         </h3>
                         <p className="text-center">
-                            Σ = &#123; {alphabet && alphabet.join(', ')} &#125;
+                            Σ = &#123;{' '}
+                            {alphabet &&
+                                alphabet
+                                    .filter((s) => s)
+                                    .join(', ')}{' '}
+                            &#125;
                         </p>
                     </div>
                     {/* container of some info */}
                     <div className="bg-[var(--color-500)] p-3 rounded-lg text-white">
                         <h3 className="font-semibold mb-2 text-center">
-                            {option === 2 ? 'AFN' : 'AFD'}
+                            {option === 0 ? 'AFN' : 'AFD'}
                         </h3>
                         <p>Initial state: {initialState}</p>
                         <p>Final state: {finalStates.join(', ')}</p>

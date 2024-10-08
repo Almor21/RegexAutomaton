@@ -40,7 +40,7 @@ function App() {
     const [table, setTable] = useState<AFNTableType | AFDTableType>();
 
     const [equivalence, setEquivalence] =
-        useState<EquivalenceTableType | null>();
+        useState<EquivalenceTableType | null>(null);
     const [identics, setIdentics] = useState<string[]>([]);
 
     const [network, reset] = useGraphDrawer(divRef.current, graph);
@@ -51,19 +51,18 @@ function App() {
 
         const afnGraph = createGraph(regex);
         const aph = getAPH(regex);
-        if (!aph.includes('&')) aph.unshift('');
-
         if (!afnGraph) return;
 
+        setAlphabet(!aph.includes('&') ? ['', ...aph]: aph);
         afnGraph.setLabels();
-        setAlphabet(aph);
-        const afnTable = getTransitionTable(afnGraph, [...aph]);
+        const afnTable = getTransitionTable(afnGraph, aph);
         if (option === 0) {
             setTable(afnTable);
             setGraph(afnGraph);
             return;
         }
 
+        setAlphabet(aph);
         const [afdTable, afdStates, equivalence] = convertAFN_to_AFD_NoOp(
             afnGraph,
             aph
@@ -86,7 +85,7 @@ function App() {
         setGraph(tableToGraph(afdOptiTable));
         setEquivalence(significantStates);
         setIdentics(identics);
-    }, [regex, option]);
+    }, [regex, option, str]);
 
     useEffect(() => {
         if (!(network && graph)) return;
@@ -131,15 +130,15 @@ function App() {
                     option={option}
                     transitions={table?.data}
                     equivalence={
-                        option === 1 ? equivalence ?? undefined : undefined
+                        option === 1 ? equivalence : null
                     }
                     significantStates={
-                        option === 2 ? equivalence ?? undefined : undefined
+                        option === 2 ? equivalence : null
                     }
                     identics={identics}
                 />
 
-                <div ref={divRef} className="w-full h-full"></div>
+                <div ref={divRef} className="h-full"></div>
                 <ControlsDisplay controls={controls} />
             </section>
         </div>

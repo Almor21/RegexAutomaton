@@ -17,8 +17,8 @@ function Table({
     alphabet: string[];
     option: number;
     transitions?: TableType;
-    equivalence?: EquivalenceTableType;
-    significantStates?: EquivalenceTableType; // La tabla de equivalencia para el AFD optimizado
+    equivalence: EquivalenceTableType | null;
+    significantStates: EquivalenceTableType | null; // La tabla de equivalencia para el AFD optimizado
     identics?: string[]; // Los estados idénticos para el AFD optimizado
 }) {
     const [open, setOpen] = useState(false);
@@ -60,9 +60,15 @@ function Table({
                         type: 'tween'
                     }
                 );
-                await animate(closeDiv.current, {
-                    x: '0%'
-                });
+                await animate(
+                    closeDiv.current,
+                    {
+                        x: '0%'
+                    },
+                    {
+                        type: 'tween'
+                    }
+                );
             }
         };
 
@@ -119,9 +125,13 @@ function Table({
                     {/* container that holds the transition table */}
                     <div
                         className="h-52 grid grid-rows-[auto_1fr]"
-                        style={option === 0 ? {
-                            height: '100%'
-                        }: {}}
+                        style={
+                            option === 0
+                                ? {
+                                      height: '100%'
+                                  }
+                                : {}
+                        }
                     >
                         <h2 className="text-white mt-2 text-center font-bold">
                             Transitions
@@ -210,8 +220,8 @@ function Table({
                                     </tbody>
                                 </table>
                             ) : (
-                                <div className="text-center py-10 text-white">
-                                    No data to display
+                                <div className="h-full flex justify-center items-center text-white">
+                                    <p>No data to display</p>
                                 </div>
                             )}
                         </div>

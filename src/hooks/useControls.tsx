@@ -42,7 +42,11 @@ function useControls(
         network
             .getConnectedEdges(idFrom)
             .filter((e) =>
-                idTo.some((n) => n === network.getConnectedNodes(e)[1])
+                idTo.some(
+                    (n) =>
+                        idFrom === network.getConnectedNodes(e)[0] &&
+                        n === network.getConnectedNodes(e)[1]
+                )
             )
             .forEach((e) => network.updateEdge(e, { color }));
     };
@@ -233,7 +237,7 @@ function useControls(
         iletter.current = 0;
         finish.current = false;
         indexStep.current = 0;
-        
+
         if (graph?.initState) {
             stepsStack.current = [
                 {
