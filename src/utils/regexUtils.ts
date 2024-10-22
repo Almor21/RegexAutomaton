@@ -8,27 +8,53 @@ import RState from '../objects/RState';
 import RConnection from '../objects/RConnection';
 
 export function validate(regex: string): boolean {
-    // regex to detect valid characters
-    const validPattern = /^[a-zA-Z0-9()+*?|&]*$/;
-
-    // verify if expression have only characters allowed
-    if (!validPattern.test(regex)) {
+    // Check if regex contains only allowed characters: letters, (, ), *, ?, +, |, &
+    if (!/^[a-zA-Z()*?+|&]+$/.test(regex)) {
         return false;
     }
 
-    // regex to detect invalid paterns like *?, +?, **, ++, etc.
-    const invalidPattern = /[*+?]{2,}|[*+?][*+?]|[?*+](?=\))|[|]{2,}|^\||\|$/;
-
-    // Verify if expression have invalid patterns
-    if (invalidPattern.test(regex)) {
+    // Ensure regex starts with a valid character
+    if (/^[+?|)]./.test(regex)) {
         return false;
     }
 
+    // Detect repeated special characters like ?, +, *
+    if (/([*+?])\1+/.test(regex)) {
+        return false;
+    }
+
+    // Validate pipes have valid characters around them, including epsilon (&)
+    if (/\|{2,}|\(\||\|\)|\|$|^\|/.test(regex)) {
+        return false;
+    }
+
+    // Check for empty or invalid parentheses
+    if (/\(\)|\([^a-zA-Z&|]*\)/.test(regex)) {
+        return false;
+    }
+
+    // Check if parentheses are balanced
+    let openCount = 0;
+    for (const char of regex) {
+        if (char === '(') {
+            openCount++;
+        } else if (char === ')') {
+            openCount--;
+            if (openCount < 0) {
+                return false;
+            }
+        }
+    }
+    if (openCount !== 0) {
+        return false;
+    }
+
+    // Attempt to compile the regex
     try {
         new RegExp(regex);
-        return true; // if can compile, the expression is valid
-    } catch (e) {
-        return false; // if can't compile, the expression is invalid
+        return true;
+    } catch {
+        return false;
     }
 }
 
