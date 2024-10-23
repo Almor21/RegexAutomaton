@@ -9,7 +9,7 @@ import RConnection from '../objects/RConnection';
 
 export function validate(regex: string): boolean {
     // Check if regex contains only allowed characters: letters, (, ), *, ?, +, |, &
-    if (!/^[a-zA-Z()*?+|&]+$/.test(regex)) {
+    if (!/^[a-zA-Z0-9()*?+|&]+$/.test(regex)) {
         return false;
     }
 
@@ -29,7 +29,7 @@ export function validate(regex: string): boolean {
     }
 
     // Check for empty or invalid parentheses
-    if (/\(\)|\([^a-zA-Z&|]*\)/.test(regex)) {
+    if (/\(\)|\([^a-zA-Z0-9&|]*\)/.test(regex)) {
         return false;
     }
 
